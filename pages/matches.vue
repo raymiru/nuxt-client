@@ -11,7 +11,14 @@ export default {
   name: 'Matches',
 
   data() {
-    return {}
+    return {
+      steam: []
+    }
+  },
+  sockets: {
+    steamApi: function(data) {
+      this.steam = data
+    }
   }
 }
 </script>

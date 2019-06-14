@@ -8,7 +8,8 @@ const store = () =>
   new Vuex.Store({
     state: {
       matchesLoaded: false,
-      matches: []
+      matches: [],
+      steamApiData: []
     },
     mutations: {
       matchesLoadedEvent(state) {
@@ -17,9 +18,8 @@ const store = () =>
       matchesSync(state, payload) {
         state.matches = payload
       },
-      oddsSync(state, payload) {
-        console.log(payload)
-        state.matches[payload.match].live_odds = payload.oddsObj
+      steamApiDataSync(state, payload) {
+        state.steamApiData = payload
       }
     }
   })
