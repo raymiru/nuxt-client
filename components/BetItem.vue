@@ -34,7 +34,7 @@
             </v-card-text>
           </v-flex>
           <v-flex md4>
-            <v-card-text>{{ data.team_name_dire || 'No Data' }} </v-card-text>
+            <v-card-text>{{ data.team_name_dire || 'No Data' }}</v-card-text>
           </v-flex>
           <v-flex md2>
             <v-card-text>{{ data.match_id || 'No Data' }}</v-card-text>
@@ -62,7 +62,7 @@
               <v-btn @click="dialog = !dialog">
                 <v-icon>data_usage</v-icon>
               </v-btn>
-              <v-btn @click="hide = !hide">
+              <v-btn @click="playSound()">
                 <v-icon>minimize</v-icon>
               </v-btn>
             </v-layout>
@@ -145,45 +145,6 @@
                   </v-flex>
                   <v-flex>
                     <v-layout class="dire">
-                      <v-flex md3>
-                        <v-card-text>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            x="0px"
-                            y="0px"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 172 172"
-                            style=" fill:#000000;"
-                          >
-                            <g
-                              fill="none"
-                              fill-rule="nonzero"
-                              stroke="none"
-                              stroke-width="1"
-                              stroke-linecap="butt"
-                              stroke-linejoin="miter"
-                              stroke-miterlimit="10"
-                              stroke-dasharray=""
-                              stroke-dashoffset="0"
-                              font-family="none"
-                              font-weight="none"
-                              font-size="none"
-                              text-anchor="none"
-                              style="mix-blend-mode: normal"
-                            >
-                              <path d="M0,172v-172h172v172z" fill="none"></path>
-                              <g fill="#ffffff">
-                                <g id="surface1">
-                                  <path
-                                    d="M168.4525,0c-0.30906,0.01344 -0.65844,0.1075 -0.9675,0.215l-38.1625,12.685c-0.55094,0.18813 -1.11531,0.5375 -1.505,0.9675l-78.1525,85.6775l11.9325,8.385c0.98094,0.68531 1.86781,1.58563 2.58,2.58l8.2775,11.825l85.6775,-78.1525c0.43,-0.38969 0.77938,-0.95406 0.9675,-1.505l12.685,-38.1625c0.41656,-1.23625 0.17469,-2.62031 -0.7525,-3.5475c-0.68531,-0.68531 -1.63937,-1.00781 -2.58,-0.9675zM25.585,92.02c-0.76594,0.05375 -1.55875,0.30906 -2.15,0.86l-6.1275,5.6975c-0.68531,0.63156 -1.16906,1.54531 -1.1825,2.4725c-0.01344,0.94063 0.41656,1.81406 1.075,2.4725l51.2775,51.2775c0.645,0.645 1.45125,1.075 2.365,1.075c0.01344,0 0.09406,0 0.1075,0c0.92719,-0.01344 1.72,-0.41656 2.365,-1.075l5.805,-6.02c1.14219,-1.1825 1.26313,-3.06375 0.3225,-4.4075l-20.9625,-29.885c-0.22844,-0.3225 -0.5375,-0.63156 -0.86,-0.86l-29.885,-20.9625c-0.65844,-0.47031 -1.38406,-0.69875 -2.15,-0.645zM28.165,124.27l-13.4375,16.985c8.30438,1.16906 14.84844,7.71313 16.0175,16.0175l16.985,-13.4375zM12.04,147.92c-6.65156,0 -12.04,5.38844 -12.04,12.04c0,6.65156 5.38844,12.04 12.04,12.04c6.65156,0 12.04,-5.38844 12.04,-12.04c0,-6.65156 -5.38844,-12.04 -12.04,-12.04z"
-                                  ></path>
-                                </g>
-                              </g>
-                            </g>
-                          </svg>
-                        </v-card-text>
-                      </v-flex>
                       <v-flex md9>
                         <v-card-text>35</v-card-text>
                       </v-flex>
@@ -191,43 +152,6 @@
                   </v-flex>
                   <v-flex>
                     <v-layout>
-                      <v-flex md3>
-                        <v-card-text>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            x="0px"
-                            y="0px"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 172 172"
-                            style=" fill:#000000;"
-                          >
-                            <g
-                              fill="none"
-                              fill-rule="nonzero"
-                              stroke="none"
-                              stroke-width="1"
-                              stroke-linecap="butt"
-                              stroke-linejoin="miter"
-                              stroke-miterlimit="10"
-                              stroke-dasharray=""
-                              stroke-dashoffset="0"
-                              font-family="none"
-                              font-weight="none"
-                              font-size="none"
-                              text-anchor="none"
-                              style="mix-blend-mode: normal"
-                            >
-                              <path d="M0,172v-172h172v172z" fill="none"></path>
-                              <g fill="#ffffff">
-                                <path
-                                  d="M57.33333,17.2c-8.84564,0 -16.9336,2.08198 -23.22448,5.85651c-6.29088,3.77453 -11.17552,9.74507 -11.17552,17.07682c0,2.62056 0.64645,5.0552 1.73568,7.28984c-1.12645,1.09562 -1.7539,2.60553 -1.73568,4.17682v11.46667c0,2.6208 0.64648,5.05519 1.73568,7.28984c-1.12645,1.09562 -1.7539,2.60554 -1.73568,4.17683v11.46667c0,2.6208 0.64648,5.05519 1.73568,7.28984c-1.12645,1.09562 -1.7539,2.60554 -1.73568,4.17683v11.46667c0,2.6208 0.64648,5.05519 1.73568,7.28984c-1.12645,1.09562 -1.7539,2.60554 -1.73568,4.17683v11.46667c0,7.33243 4.8844,13.3025 11.17552,17.07683c6.29112,3.77432 14.38001,5.85651 23.22448,5.85651c8.84446,0 16.93337,-2.08219 23.22448,-5.85651c2.00298,-1.20168 3.83664,-2.64647 5.44219,-4.26641c1.60555,1.61994 3.43921,3.06473 5.44219,4.26641c6.29111,3.77432 14.38001,5.85651 23.22448,5.85651c8.84446,0 16.93337,-2.08219 23.22448,-5.85651c6.29112,-3.77432 11.17552,-9.7444 11.17552,-17.07683v-11.46667c0.0213,-1.57516 -0.60638,-3.08971 -1.73567,-4.18802c1.0864,-2.23215 1.73567,-4.66148 1.73567,-7.27864v-11.46667c0.0213,-1.57516 -0.60638,-3.08971 -1.73567,-4.18802c1.08643,-2.23213 1.73567,-4.66172 1.73567,-7.27864c0,-7.33175 -4.88464,-13.30229 -11.17552,-17.07683c-6.29088,-3.77453 -14.37884,-5.85651 -23.22448,-5.85651c-8.84564,0 -16.93359,2.08198 -23.22448,5.85651c-0.43643,0.26186 -0.79884,0.61312 -1.22058,0.89583c0.93606,-2.09026 1.51172,-4.33649 1.51172,-6.75234v-11.46667c0.0213,-1.57516 -0.60638,-3.08971 -1.73567,-4.18802c1.08643,-2.23213 1.73567,-4.66172 1.73567,-7.27865c0,-7.33175 -4.88464,-13.30229 -11.17552,-17.07682c-6.29088,-3.77453 -14.37884,-5.85651 -23.22448,-5.85651zM57.33333,28.66667c6.98653,0 13.23877,1.77097 17.32317,4.22161c4.08441,2.45065 5.61016,5.07751 5.61016,7.24505c0,2.16755 -1.52575,4.79441 -5.61016,7.24505c-4.08441,2.45065 -10.33665,4.22161 -17.32317,4.22161c-6.98652,0 -13.23877,-1.77097 -17.32318,-4.22161c-4.08441,-2.45065 -5.61016,-5.07751 -5.61016,-7.24505c0,-2.16755 1.52575,-4.79441 5.61016,-7.24505c4.08441,-2.45065 10.33665,-4.22161 17.32318,-4.22161zM34.4,57.35573c6.25093,3.67165 14.21558,5.71094 22.93333,5.71094c8.71776,0 16.6824,-2.03929 22.93333,-5.71094v5.71094c0,2.1677 -1.52537,4.79441 -5.61016,7.24505c-4.08478,2.45064 -10.33791,4.22161 -17.32317,4.22161c-6.98527,0 -13.23839,-1.77097 -17.32318,-4.22161c-4.08478,-2.45064 -5.61016,-5.07735 -5.61016,-7.24505zM114.66667,74.53333c6.98653,0 13.23877,1.77097 17.32317,4.22161c4.08441,2.45064 5.61016,5.07751 5.61016,7.24505c0,2.16754 -1.52575,4.79441 -5.61016,7.24505c-4.08441,2.45064 -10.33665,4.22161 -17.32317,4.22161c-6.98653,0 -13.23877,-1.77097 -17.32317,-4.22161c-4.08441,-2.45064 -5.61016,-5.07751 -5.61016,-7.24505c0,-2.16754 1.52575,-4.79441 5.61016,-7.24505c4.08441,-2.45064 10.33665,-4.22161 17.32317,-4.22161zM34.4,80.28906c6.25118,3.67145 14.21673,5.71094 22.93333,5.71094c8.7166,0 16.68216,-2.03948 22.93333,-5.71094v5.71094c0,2.1677 -1.52537,4.79441 -5.61016,7.24505c-4.08478,2.45064 -10.33791,4.22161 -17.32317,4.22161c-6.98527,0 -13.23839,-1.77097 -17.32318,-4.22161c-4.08478,-2.45064 -5.61016,-5.07735 -5.61016,-7.24505zM34.4,103.22239c6.25118,3.67145 14.21673,5.71094 22.93333,5.71094c8.7166,0 16.68216,-2.03948 22.93333,-5.71094v5.71094c0,2.1677 -1.52537,4.79441 -5.61016,7.24505c-4.08478,2.45064 -10.33791,4.22161 -17.32317,4.22161c-6.98527,0 -13.23839,-1.77097 -17.32318,-4.22161c-4.08478,-2.45064 -5.61016,-5.07735 -5.61016,-7.24505zM91.73333,103.22239c6.25093,3.67165 14.21558,5.71094 22.93333,5.71094c8.71776,0 16.6824,-2.03929 22.93333,-5.71094v5.71094c0,2.1677 -1.52537,4.79441 -5.61016,7.24505c-4.08478,2.45064 -10.33791,4.22161 -17.32317,4.22161c-6.98527,0 -13.23839,-1.77097 -17.32317,-4.22161c-4.08479,-2.45064 -5.61016,-5.07735 -5.61016,-7.24505zM34.4,126.15573c6.25118,3.67145 14.21673,5.71094 22.93333,5.71094c8.7166,0 16.68216,-2.03948 22.93333,-5.71094v5.71094c0,2.1677 -1.52537,4.79441 -5.61016,7.24505c-4.08478,2.45064 -10.33791,4.22161 -17.32317,4.22161c-6.98527,0 -13.23839,-1.77097 -17.32318,-4.22161c-4.08478,-2.45064 -5.61016,-5.07735 -5.61016,-7.24505zM91.73333,126.15573c6.25117,3.67145 14.21673,5.71094 22.93333,5.71094c8.7166,0 16.68216,-2.03948 22.93333,-5.71094v5.71094c0,2.1677 -1.52537,4.79441 -5.61016,7.24505c-4.08478,2.45064 -10.33791,4.22161 -17.32317,4.22161c-6.98527,0 -13.23839,-1.77097 -17.32317,-4.22161c-4.08479,-2.45064 -5.61016,-5.07735 -5.61016,-7.24505z"
-                                ></path>
-                              </g>
-                            </g>
-                          </svg>
-                        </v-card-text>
-                      </v-flex>
                       <v-flex md9>
                         <v-card-text>14523</v-card-text>
                       </v-flex>
@@ -247,11 +171,16 @@
               </v-flex>
             </v-layout>
           </v-flex>
-          <v-flex md3>
-            <v-layout fill-height>
+          <v-flex :class="dynamicClass(teamA.NAME)" md3>
+            <v-layout v-if="matchIndex !== null" fill-height>
               <v-flex md6>
                 <v-layout>
-                  <v-flex v-if="matchIndex !== null" md6>
+                  <v-flex
+                    v-if="
+                      $store.state.steamApiData[matchIndex].team_name_radiant
+                    "
+                    md6
+                  >
                     <v-card-title
                       >{{
                         $store.state.steamApiData[matchIndex].team_name_radiant
@@ -259,7 +188,14 @@
                       }}
                     </v-card-title>
                   </v-flex>
-                  <v-flex v-if="matchIndex !== null" md6>
+                  <v-flex v-else md6>
+                    <v-card-title>Radiant </v-card-title>
+                  </v-flex>
+
+                  <v-flex
+                    v-if="$store.state.steamApiData[matchIndex].team_name_dire"
+                    md6
+                  >
                     <v-card-title
                       >{{
                         $store.state.steamApiData[matchIndex].team_name_dire
@@ -267,10 +203,13 @@
                       }}
                     </v-card-title>
                   </v-flex>
+                  <v-flex v-else md6>
+                    <v-card-title>Dire </v-card-title>
+                  </v-flex>
                 </v-layout>
                 <v-layout pa-2>
-                  <v-flex md5 v-if="matchIndex !== null">
-                    <v-card-media
+                  <v-flex md5>
+                    <v-card-media class="gold_lead"
                       >{{
                         $store.state.steamApiData[matchIndex].radiant_lead
                           | goldRadiantFilter
@@ -314,8 +253,8 @@
                       </svg>
                     </v-card-media>
                   </v-flex>
-                  <v-flex md5 v-if="matchIndex !== null">
-                    <v-card-media
+                  <v-flex md5>
+                    <v-card-media class="gold_lead"
                       >{{
                         $store.state.steamApiData[matchIndex].radiant_lead
                           | goldDireFilter
@@ -325,7 +264,11 @@
                 </v-layout>
                 <v-divider></v-divider>
                 <v-layout pa-2>
-                  <v-flex class="text-md-right">24</v-flex>
+                  <v-flex class="text-md-right kills">
+                    <v-card-media>{{
+                      $store.state.steamApiData[matchIndex].radiant_score
+                    }}</v-card-media>
+                  </v-flex>
                   <v-flex>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -363,13 +306,21 @@
                       </g>
                     </svg>
                   </v-flex>
-                  <v-flex class="text-md-left">13</v-flex>
+                  <v-flex class="text-md-left kills">
+                    <v-card-media>{{
+                      $store.state.steamApiData[matchIndex].dire_score
+                    }}</v-card-media>
+                  </v-flex>
                 </v-layout>
                 <v-divider></v-divider>
                 <v-layout pa-1>
-                  <v-flex class="text-md-right">3</v-flex>
+                  <v-flex class="text-md-right kills_change">{{
+                    this.team_radiant_kills_change
+                  }}</v-flex>
                   <v-flex>-</v-flex>
-                  <v-flex class="text-md-left">1</v-flex>
+                  <v-flex class="text-md-left kills_change">{{
+                    this.team_dire_kills_change
+                  }}</v-flex>
                 </v-layout>
               </v-flex>
               <v-flex md6>2</v-flex>
@@ -389,7 +340,7 @@
       text-md-center
       justify-center
     >
-      <v-card>
+      <v-card :class="dynamicClass(teamA.NAME)">
         <v-layout align-center style="border: gray 2px groove">
           <v-flex md2>
             <v-img :src="tournamentLogo"></v-img>
@@ -420,6 +371,8 @@
 </template>
 
 <script>
+import sound from '@/assets/arpeggio.mp3'
+
 export default {
   name: 'BetItem',
   filters: {
@@ -447,8 +400,9 @@ export default {
   },
   data() {
     return {
+      audio: null,
       dialog: false,
-      steamApiMatch: Number,
+      steamApiMatch: 0,
       bet: {
         power: 0.1,
         winSide: false,
@@ -457,6 +411,10 @@ export default {
           inactive: 0
         }
       },
+      team_radiant_kills: 0,
+      team_dire_kills: 0,
+      team_radiant_kills_change: 0,
+      team_dire_kills_change: 0,
       score: {
         radiant_lead: 0,
         team_A: {
@@ -510,8 +468,33 @@ export default {
       return steamIndex
     }
   },
+  watch: {
+    team_radiant_kills: function(val, oldVal) {
+      console.log(oldVal)
+      console.log(val)
+      this.team_radiant_kills_change = val - oldVal
+      this.someThing()
+    },
+    team_dire_kills: function(val, oldVal) {
+      console.log(oldVal)
+      console.log(val)
+      this.team_dire_kills_change = val - oldVal
+      this.someThing()
+    }
+  },
 
   created() {
+    this.$store.subscribe((mutation, state) => {
+      if (this.matchIndex !== null) {
+        state.steamApiData.forEach((data, index) => {
+          if (data.match_id === this.steamApiMatch) {
+            this.team_radiant_kills = data.radiant_score
+            this.team_dire_kills = data.dire_score
+          }
+        })
+      }
+    })
+
     this.$socket.on(`${this.dataId}`, data => {
       const json = JSON.parse(data)
       if (json.m_koef_live_a) {
@@ -538,6 +521,65 @@ export default {
   },
 
   methods: {
+    playSound() {
+      let audio = new Audio(sound)
+
+      audio.volume = 0.5
+      audio.play()
+    },
+
+    dynamicClass(data) {
+      console.log('DYNAMIC')
+      return data
+    },
+
+    someThing() {
+      this.playSound()
+      document.querySelector(`.${this.teamA.NAME}`).style.background = 'blue'
+      setTimeout(() => {
+        document.querySelector(`.${this.teamA.NAME}`).style.background =
+          '#424242'
+        setTimeout(() => {
+          document.querySelector(`.${this.teamA.NAME}`).style.background =
+            'blue'
+          setTimeout(() => {
+            document.querySelector(`.${this.teamA.NAME}`).style.background =
+              '#424242'
+            setTimeout(() => {
+              document.querySelector(`.${this.teamA.NAME}`).style.background =
+                'blue'
+              setTimeout(() => {
+                document.querySelector(`.${this.teamA.NAME}`).style.background =
+                  '#424242'
+                setTimeout(() => {
+                  document.querySelector(
+                    `.${this.teamA.NAME}`
+                  ).style.background = 'blue'
+                  setTimeout(() => {
+                    document.querySelector(
+                      `.${this.teamA.NAME}`
+                    ).style.background = '#424242'
+                    setTimeout(() => {
+                      document.querySelector(
+                        `.${this.teamA.NAME}`
+                      ).style.background = 'blue'
+                      setTimeout(() => {
+                        document.querySelector(
+                          `.${this.teamA.NAME}`
+                        ).style.background = '#424242'
+                      }, 500)
+                    }, 500)
+                  }, 500)
+                }, 500)
+              }, 500)
+            }, 500)
+          }, 500)
+        }, 500)
+      }, 500)
+
+      console.log('DOING THINGS')
+    },
+
     changeBetPower(power) {
       this.bet.power = power
     },
@@ -550,11 +592,6 @@ export default {
   },
 
   sockets: {
-    steamApi: function(data) {
-      if (this.matchIndex !== null) {
-        this.score.team_A.name = this.$store.state.steamApiData[this.matchIndex].team_name_radiant
-      }
-    },
     updatematch_dota: function(data) {
       console.log(data)
     }
@@ -630,5 +667,19 @@ export default {
 
 .right_razmen {
   padding-right: 60px;
+}
+
+.kills_change {
+  color: coral;
+  font-size: 15px;
+}
+
+.gold_lead {
+  font-size: 15px;
+  color: gold;
+}
+
+.kills {
+  font-size: 15px;
 }
 </style>
