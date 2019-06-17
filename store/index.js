@@ -7,14 +7,15 @@ Vue.use(Vuex)
 const store = () =>
   new Vuex.Store({
     state: {
-      matchesLoaded: false,
+      errorMessage: '',
       matches: [],
       steamApiData: []
     },
     mutations: {
-      matchesLoadedEvent(state) {
-        state.matchesLoaded = true
+      errorMessageThrow(state, payload) {
+        state.errorMessage = payload
       },
+
       matchesSync(state, payload) {
         state.matches = payload
       },

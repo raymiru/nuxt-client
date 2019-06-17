@@ -62,8 +62,8 @@
               <v-btn @click="dialog = !dialog">
                 <v-icon>data_usage</v-icon>
               </v-btn>
-              <v-btn @click="playSound()">
-                <v-icon>minimize</v-icon>
+              <v-btn @click="func1">
+                <v-icon>search</v-icon>
               </v-btn>
             </v-layout>
           </v-flex>
@@ -71,8 +71,8 @@
             <v-layout class="justify-space-between text-md-center">
               <v-flex md6>
                 <v-layout column class="team_card" @click="chooseWinner(1)">
-                  <v-flex>
-                    <v-card-text>{{ teamA.NAME | substr }}</v-card-text>
+                  <v-flex pa-2>
+                    {{ teamA.NAME }}
                   </v-flex>
                   <v-flex class="pa-1">
                     <v-img :src="teamA.LOGO"></v-img>
@@ -144,15 +144,15 @@
                     </v-card-text>
                   </v-flex>
                   <v-flex>
-                    <v-layout class="dire">
-                      <v-flex md9>
+                    <v-layout>
+                      <v-flex>
                         <v-card-text>35</v-card-text>
                       </v-flex>
                     </v-layout>
                   </v-flex>
                   <v-flex>
                     <v-layout>
-                      <v-flex md9>
+                      <v-flex>
                         <v-card-text>14523</v-card-text>
                       </v-flex>
                     </v-layout>
@@ -161,8 +161,8 @@
               </v-flex>
               <v-flex style="border: gray 2px groove" md6>
                 <v-layout column class="team_card" @click="chooseWinner(2)">
-                  <v-flex>
-                    <v-card-text>{{ teamB.NAME | substr }}</v-card-text>
+                  <v-flex pa-2>
+                    {{ teamB.NAME }}
                   </v-flex>
                   <v-flex class="pa-1">
                     <v-img :src="teamB.LOGO"></v-img>
@@ -171,43 +171,73 @@
               </v-flex>
             </v-layout>
           </v-flex>
-          <v-flex :class="dynamicClass(teamA.NAME)" md3>
+          <v-flex :class="dynamicClass(teamA.NAME.split(' ')[0])" md4>
             <v-layout v-if="matchIndex !== null" fill-height>
-              <v-flex md6>
+              <v-flex md1>
+                <v-layout
+                  v-for="(value, index) in $store.state.steamApiData[matchIndex]
+                    .players"
+                  v-if="index < 5"
+                >
+                  <v-flex class="hero_img"
+                    ><v-img :src="value.imgSrc"></v-img
+                  ></v-flex>
+                </v-layout>
+              </v-flex>
+
+              <v-flex md5>
                 <v-layout>
                   <v-flex
+                    pa-2
+                    class="score_title"
                     v-if="
                       $store.state.steamApiData[matchIndex].team_name_radiant
                     "
                     md6
                   >
-                    <v-card-title
+                    <v-card-media
                       >{{
                         $store.state.steamApiData[matchIndex].team_name_radiant
-                          | substr
                       }}
-                    </v-card-title>
+                    </v-card-media>
                   </v-flex>
                   <v-flex v-else md6>
                     <v-card-title>Radiant </v-card-title>
                   </v-flex>
 
                   <v-flex
+                    pa-2
+                    class="score_title"
                     v-if="$store.state.steamApiData[matchIndex].team_name_dire"
                     md6
                   >
-                    <v-card-title
+                    <v-card-media
                       >{{
                         $store.state.steamApiData[matchIndex].team_name_dire
-                          | substr
                       }}
-                    </v-card-title>
+                    </v-card-media>
                   </v-flex>
                   <v-flex v-else md6>
                     <v-card-title>Dire </v-card-title>
                   </v-flex>
                 </v-layout>
-                <v-layout pa-2>
+
+                <v-layout pa-1>
+                  <v-flex md6
+                    ><v-card-media style="color: greenyellow">{{
+                      $store.state.steamApiData[matchIndex].game_time | gameTime
+                    }}</v-card-media></v-flex
+                  >
+                  <v-flex md6 v-if="this.radiant_win === true"
+                    ><v-card-media>Radiant Win</v-card-media></v-flex
+                  >
+                  <v-flex md6 v-else-if="this.radiant_win === false"
+                    ><v-card-media>Dire Win</v-card-media></v-flex
+                  >
+                  <v-flex md6 v-else><v-card-media>Live</v-card-media></v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <v-layout pa-1>
                   <v-flex md5>
                     <v-card-media class="gold_lead"
                       >{{
@@ -263,14 +293,28 @@
                   </v-flex>
                 </v-layout>
                 <v-divider></v-divider>
-                <v-layout pa-2>
+                <v-layout pa-1>
                   <v-flex class="text-md-right kills">
                     <v-card-media>{{
                       $store.state.steamApiData[matchIndex].radiant_score
                     }}</v-card-media>
                   </v-flex>
                   <v-flex>
-                    <svg
+                    -
+                  </v-flex>
+                  <v-flex class="text-md-left kills">
+                    <v-card-media>{{
+                      $store.state.steamApiData[matchIndex].dire_score
+                    }}</v-card-media>
+                  </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <v-layout pa-1>
+                  <v-flex class="text-md-right kills_change">{{
+                    this.team_radiant_kills_change
+                  }}</v-flex>
+                  <v-flex
+                    ><svg
                       xmlns="http://www.w3.org/2000/svg"
                       x="0px"
                       y="0px"
@@ -303,27 +347,31 @@
                             ></path>
                           </g>
                         </g>
-                      </g>
-                    </svg>
-                  </v-flex>
-                  <v-flex class="text-md-left kills">
-                    <v-card-media>{{
-                      $store.state.steamApiData[matchIndex].dire_score
-                    }}</v-card-media>
-                  </v-flex>
-                </v-layout>
-                <v-divider></v-divider>
-                <v-layout pa-1>
-                  <v-flex class="text-md-right kills_change">{{
-                    this.team_radiant_kills_change
-                  }}</v-flex>
-                  <v-flex>-</v-flex>
+                      </g></svg
+                  ></v-flex>
                   <v-flex class="text-md-left kills_change">{{
                     this.team_dire_kills_change
                   }}</v-flex>
                 </v-layout>
               </v-flex>
-              <v-flex md6>2</v-flex>
+              <v-flex md1>
+                <v-layout
+                  v-for="(value, index) in $store.state.steamApiData[matchIndex]
+                    .players"
+                  v-if="index >= 5"
+                >
+                  <v-flex class="hero_img"
+                    ><v-img :src="value.imgSrc"></v-img
+                  ></v-flex>
+                </v-layout>
+              </v-flex>
+              <v-flex md5>
+                <canvas
+                  :id="dynamicClass(teamA.NAME.split(' ')[0])"
+                  width="170"
+                  height="170"
+                ></canvas>
+              </v-flex>
             </v-layout>
           </v-flex>
         </v-layout>
@@ -346,7 +394,7 @@
             <v-img :src="tournamentLogo"></v-img>
           </v-flex>
           <v-flex md1>
-            <v-btn @click="hide = !hide">
+            <v-btn @click="hideAndMap">
               <v-icon>reorder</v-icon>
             </v-btn>
           </v-flex>
@@ -372,10 +420,36 @@
 
 <script>
 import sound from '@/assets/arpeggio.mp3'
+import sound2 from '@/assets/sound2.mp3'
+import sound3 from '@/assets/naruto_flute.mp3'
+import { Dota2Map } from './Dota2Map'
 
 export default {
   name: 'BetItem',
+
   filters: {
+    to8num: function to8num(value) {
+      // Аргументы: строка, система счисления
+      return value.toString(8)
+    },
+    gameTime: function(value) {
+      let sec_num = parseInt(value, 10) // don't forget the second param
+      let hours = Math.floor(sec_num / 3600)
+      let minutes = Math.floor((sec_num - hours * 3600) / 60)
+      let seconds = sec_num - hours * 3600 - minutes * 60
+
+      if (hours < 10) {
+        hours = '0' + hours
+      }
+      if (minutes < 10) {
+        minutes = '0' + minutes
+      }
+      if (seconds < 10) {
+        seconds = '0' + seconds
+      }
+      return hours + ':' + minutes + ':' + seconds
+    },
+
     substr: function(value) {
       if (!value) return
       value = value.substr(0, 10)
@@ -400,6 +474,7 @@ export default {
   },
   data() {
     return {
+      dota2Map: null,
       audio: null,
       dialog: false,
       steamApiMatch: 0,
@@ -411,10 +486,30 @@ export default {
           inactive: 0
         }
       },
+      deactivate_time: 100,
+      buildingStateString: 0,
+      buildingStateStringChange: 0,
+      buildingState: {
+        team1: {
+          top: '00000',
+          mid: '00001',
+          bot: '11111',
+          t4: '11'
+        },
+        team2: {
+          top: '11111',
+          mid: '11111',
+          bot: '11111',
+          t4: '11'
+        }
+      },
+      testData: 0,
+      radiant_win: null,
       team_radiant_kills: 0,
       team_dire_kills: 0,
       team_radiant_kills_change: 0,
       team_dire_kills_change: 0,
+      radiant_lead: 0,
       score: {
         radiant_lead: 0,
         team_A: {
@@ -469,17 +564,34 @@ export default {
     }
   },
   watch: {
-    team_radiant_kills: function(val, oldVal) {
-      console.log(oldVal)
-      console.log(val)
-      this.team_radiant_kills_change = val - oldVal
-      this.someThing()
+    deactivate_time: function(newValue) {
+      if (newValue !== 0) {
+        this.someThing(sound3)
+        this.$socket.emit('check_winner', {
+          data_id: this.dataId,
+          match_id: this.steamApiMatch
+        })
+      }
     },
-    team_dire_kills: function(val, oldVal) {
-      console.log(oldVal)
-      console.log(val)
-      this.team_dire_kills_change = val - oldVal
-      this.someThing()
+
+    testData: function() {
+      console.log('CHANGE testData')
+    },
+    // kills: function(val, oldVal) {
+    //   console.log('change')
+    //   console.log(val);
+    //   console.log(oldVal)
+    // },
+
+    team_radiant_kills: function() {
+      this.someThing(sound)
+    },
+    team_dire_kills: function() {
+      this.someThing(sound)
+    },
+
+    buildingStateString: function() {
+      this.someThing(sound2)
     }
   },
 
@@ -488,40 +600,84 @@ export default {
       if (this.matchIndex !== null) {
         state.steamApiData.forEach((data, index) => {
           if (data.match_id === this.steamApiMatch) {
-            this.team_radiant_kills = data.radiant_score
-            this.team_dire_kills = data.dire_score
+            if (
+              this.team_radiant_kills === data.radiant_score &&
+              this.team_dire_kills === data.dire_score
+            ) {
+              this.buildingStateStringChange =
+                data.building_state_string - this.buildingStateString
+              this.buildingStateString = data.building_state_string
+              this.radiant_lead = data.radiant_lead
+              this.buildingState = data.building_state
+              this.dota2Map.changeState(this.buildingState)
+              this.deactivate_time = data.deactivate_time
+            } else {
+              this.buildingStateStringChange =
+                data.building_state_string - this.buildingStateString
+              this.buildingStateString = data.building_state_string
+              this.team_radiant_kills_change =
+                data.radiant_score - this.team_radiant_kills
+              this.team_radiant_kills = data.radiant_score
+              this.team_dire_kills_change =
+                data.dire_score - this.team_dire_kills
+              this.team_dire_kills = data.dire_score
+              this.radiant_lead = data.radiant_lead
+              this.buildingState = data.building_state
+              this.dota2Map.changeState(this.buildingState)
+              this.deactivate_time = data.deactivate_time
+            }
           }
         })
       }
     })
 
     this.$socket.on(`${this.dataId}`, data => {
-      const json = JSON.parse(data)
-      if (json.m_koef_live_a) {
-        this.odds.live.team_A.odd = json.m_koef_live_a
-      }
-      if (json.m_koef_live_b) {
-        this.odds.live.team_B.odd = json.m_koef_live_b
-      }
-      if (json.locked) {
-        this.odds.locked = json.locked
-      }
-      if (json.live_restriction_RUB) {
-        this.odds.live.team_A.max = json.live_restriction_RUB[0]
-        this.odds.live.team_B.max = json.live_restriction_RUB[1]
-      }
+      if (data.radiant_win !== undefined) {
+        this.radiant_win = data.radiant_win
+      } else {
+        const json = JSON.parse(data)
+        if (json.m_koef_live_a) {
+          this.odds.live.team_A.odd = json.m_koef_live_a
+        }
+        if (json.m_koef_live_b) {
+          this.odds.live.team_B.odd = json.m_koef_live_b
+        }
+        if (json.locked) {
+          this.odds.locked = json.locked
+        }
+        if (json.live_restriction_RUB) {
+          this.odds.live.team_A.max = json.live_restriction_RUB[0]
+          this.odds.live.team_B.max = json.live_restriction_RUB[1]
+        }
 
-      if (json.m_koef_a) {
-        this.odds.soon.team_A.odd = json.m_koef_a
-      }
-      if (json.m_koef_b) {
-        this.odds.soon.team_B.odd = json.m_koef_b
+        if (json.m_koef_a) {
+          this.odds.soon.team_A.odd = json.m_koef_a
+        }
+        if (json.m_koef_b) {
+          this.odds.soon.team_B.odd = json.m_koef_b
+        }
       }
     })
   },
 
   methods: {
-    playSound() {
+    hideAndMap: function() {
+      this.hide = !this.hide
+      setTimeout(() => {
+        const canvasElement = document.getElementById(
+          `${this.teamA.NAME.split(' ')[0]}`
+        )
+
+        this.dota2Map = new Dota2Map(canvasElement)
+        this.dota2Map.changeState(this.buildingState)
+      }, 200)
+    },
+
+    func1: function() {
+      this.testData = 15
+    },
+
+    playSound(sound) {
       let audio = new Audio(sound)
 
       audio.volume = 0.5
@@ -533,40 +689,40 @@ export default {
       return data
     },
 
-    someThing() {
-      this.playSound()
-      document.querySelector(`.${this.teamA.NAME}`).style.background = 'blue'
-      setTimeout(() => {
-        document.querySelector(`.${this.teamA.NAME}`).style.background =
-          '#424242'
+    someThing(audio) {
+      const className = this.teamA.NAME.split(' ')[0];
+
+      try {
+        this.playSound(audio)
+        document.querySelector(`.${className}`).style.background = 'blue'
         setTimeout(() => {
-          document.querySelector(`.${this.teamA.NAME}`).style.background =
-            'blue'
+          document.querySelector(`.${className}`).style.background = '#424242'
           setTimeout(() => {
-            document.querySelector(`.${this.teamA.NAME}`).style.background =
-              '#424242'
+            document.querySelector(`.${className}`).style.background = 'blue'
             setTimeout(() => {
-              document.querySelector(`.${this.teamA.NAME}`).style.background =
-                'blue'
+              document.querySelector(`.${className}`).style.background =
+                '#424242'
               setTimeout(() => {
-                document.querySelector(`.${this.teamA.NAME}`).style.background =
-                  '#424242'
+                document.querySelector(`.${className}`).style.background =
+                  'blue'
                 setTimeout(() => {
-                  document.querySelector(
-                    `.${this.teamA.NAME}`
-                  ).style.background = 'blue'
+                  document.querySelector(`.${className}`).style.background =
+                    '#424242'
                   setTimeout(() => {
-                    document.querySelector(
-                      `.${this.teamA.NAME}`
-                    ).style.background = '#424242'
+                    document.querySelector(`.${className}`).style.background =
+                      'blue'
                     setTimeout(() => {
-                      document.querySelector(
-                        `.${this.teamA.NAME}`
-                      ).style.background = 'blue'
+                      document.querySelector(`.${className}`).style.background =
+                        '#424242'
                       setTimeout(() => {
                         document.querySelector(
-                          `.${this.teamA.NAME}`
-                        ).style.background = '#424242'
+                          `.${className}`
+                        ).style.background = 'blue'
+                        setTimeout(() => {
+                          document.querySelector(
+                            `.${className}`
+                          ).style.background = '#424242'
+                        }, 500)
                       }, 500)
                     }, 500)
                   }, 500)
@@ -575,9 +731,9 @@ export default {
             }, 500)
           }, 500)
         }, 500)
-      }, 500)
-
-      console.log('DOING THINGS')
+      } catch (e) {
+        console.log(e)
+      }
     },
 
     changeBetPower(power) {
@@ -588,6 +744,26 @@ export default {
     },
     chooseSteamApiMatch(data) {
       this.steamApiMatch = data
+      this.$socket.emit('check_winner', {
+        data_id: this.dataId,
+        match_id: this.steamApiMatch
+      })
+      setTimeout(() => {
+        this.buildingState = this.$store.state.steamApiData[
+          this.matchIndex
+        ].building_state
+      }, 100)
+
+      setTimeout(() => {
+        const canvasElement = document.getElementById(
+          `${this.teamA.NAME.split(' ')[0]}`
+        )
+
+        this.dota2Map = new Dota2Map(canvasElement)
+        this.dota2Map.changeState(this.buildingState)
+      }, 200);
+
+      this.playSound(sound3)
     }
   },
 
@@ -681,5 +857,14 @@ export default {
 
 .kills {
   font-size: 15px;
+}
+
+.score_title {
+  font-size: 12px;
+}
+
+.hero_img {
+  padding-top: 7px;
+  padding-bottom: 7px;
 }
 </style>
