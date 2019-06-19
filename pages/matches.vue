@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <div class="aside_block map_wrap">
-      <canvas id="map" width="220" height="220"></canvas>
-    </div>
+    <div id="twitch-embed"></div>
   </v-container>
 </template>
 
@@ -11,7 +9,6 @@
 
 export default {
   name: 'Matches',
-
   data() {
     return {
       dota2Map: null,
@@ -24,24 +21,13 @@ export default {
     }
   },
   mounted() {
-    const canvasElement = document.getElementById(`map`);
-
-    this.dota2Map = new Dota2Map(canvasElement)
-    this.dota2Map.changeState({
-      "team1": {
-        "top":"11111",
-        "mid":"11111",
-        "bot":"11111",
-        "t4":"11"
-      },
-      "team2": {
-        "top":"11111",
-        "mid":"11111",
-        "bot":"11111",
-        "t4":"11"
-      }
-    })
+    const twitch = new Twitch.Embed("twitch-embed", {
+      width: 854,
+      height: 480,
+      channel: "alohadancetv"
+    });
   }
+
 }
 </script>
 

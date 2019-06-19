@@ -486,7 +486,7 @@ export default {
           inactive: 0
         }
       },
-      deactivate_time: 100,
+      deactivate_time: 0,
       buildingStateString: 0,
       buildingStateStringChange: 0,
       buildingState: {
@@ -564,14 +564,15 @@ export default {
     }
   },
   watch: {
-    deactivate_time: function(newValue) {
-      if (newValue !== 0) {
-        this.someThing(sound3)
+    radiant_win: function() {
+      this.someThing(sound3)
+    },
+
+    deactivate_time: function() {
         this.$socket.emit('check_winner', {
           data_id: this.dataId,
           match_id: this.steamApiMatch
         })
-      }
     },
 
     testData: function() {
