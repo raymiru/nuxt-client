@@ -5,7 +5,7 @@ import VueSocketIO from 'vue-socket.io-extended'
 export default ({ store }) => {
   Vue.use(
     VueSocketIO,
-    io('https://rmbets.site', {
+    io('https://www.rmbets.site/manager', {
       transports: ['websocket']
     }),
     { store }
