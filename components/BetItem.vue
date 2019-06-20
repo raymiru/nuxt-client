@@ -776,7 +776,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .container {
   padding: 14px;
   border: gray 1px groove;

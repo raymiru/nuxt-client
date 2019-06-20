@@ -57,7 +57,7 @@
   }
 </script>
 
-<style lang="scss">
+<style scoped>
   .container {
   }
 </style>

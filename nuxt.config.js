@@ -63,6 +63,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {},
+
   /*
    ** Build configuration
    */
@@ -71,13 +72,15 @@ export default {
      ** You can extend webpack config here
      */
     extend(config, ctx) {
-      config.module.rules.push({
-        test: /\.(ogg|mp3|wav|mpe?g)$/i,
-        loader: 'file-loader',
-        options: {
-          name: '[path][name].[ext]',
-        }
-      })
+
+        config.module.rules.push({
+          test: /\.(ogg|mp3|wav|mpe?g)$/i,
+          loader: 'file-loader',
+          options: {
+            name: '[path][name].[ext]',
+          }
+        })
+
     }
   }
 }
