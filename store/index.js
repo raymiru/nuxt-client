@@ -9,7 +9,8 @@ const store = () =>
     state: {
       errorMessage: '',
       matches: [],
-      steamApiData: []
+      steamApiData: [],
+      players: []
     },
     mutations: {
       errorMessageThrow(state, payload) {
@@ -21,6 +22,9 @@ const store = () =>
       },
       steamApiDataSync(state, payload) {
         state.steamApiData = payload
+      },
+      playersSync(state, payload) {
+        state.players = payload
       }
     }
   })

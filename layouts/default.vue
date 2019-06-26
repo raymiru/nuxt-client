@@ -72,12 +72,13 @@ export default {
       fixed: false,
       items: [
         { icon: 'apps', title: 'Welcome', to: '/' },
-        { icon: 'bubble_chart', title: 'Inspire', to: '/matches' }
+        { icon: 'bubble_chart', title: 'Inspire', to: '/matches' },
+        { icon: 'account_circle', title: 'Players', to: '/players' }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'RMBETS'
     }
   },
   sockets: {
@@ -89,17 +90,20 @@ export default {
       this.$store.commit('errorMessageThrow', 'Матчи не найдены. Проверьте Manager и Watcher')
     },
 
-    steamApi: function(data) {
+    live_score_api: function(data) {
+      if (data) this.$store.commit('steamApiDataSync', data)
+    },
+
+    players_sync: function(data) {
       console.log(data)
-      if (data !== null) {
-        this.$store.commit('steamApiDataSync', data)
-      }
+      if (data) this.$store.commit('playersSync', data)
     },
 
     connect: function() {
       this.$store.commit('errorMessageThrow', 'Loading')
       this.$socket.emit('auth', {
-        username: 'admin'
+        type: 'admin',
+        username: null
       })
     },
 

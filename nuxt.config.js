@@ -48,6 +48,9 @@ export default {
     },
     {
       src: '~/plugins/steamApi.js'
+    },
+    {
+      src: '~/plugins/chance.js'
     }
   ],
   /*
