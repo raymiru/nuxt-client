@@ -440,6 +440,7 @@
   import sound from '@/assets/arpeggio.mp3'
   import sound2 from '@/assets/sound2.mp3'
   import sound3 from '@/assets/naruto_flute.mp3'
+  import sound4 from '@/assets/in_the_end.mp3'
   import { Dota2Map } from './Dota2Map'
 
 
@@ -586,7 +587,7 @@
     },
     watch: {
       radiant_win: function() {
-        this.someThing(sound3)
+        this.someThing(sound4)
       },
 
       deactivate_time: function() {
@@ -801,7 +802,7 @@
           this.dota2Map.changeState(this.buildingState)
         }, 200)
 
-        this.playSound(sound3);
+        this.playSound(sound4);
         this.heroesIcons()
 
       }
