@@ -6,7 +6,10 @@ export default ({ store }) => {
   Vue.use(
     VueSocketIO,
     io('https://www.rmbets.site', {
-      transports: ['websocket']
+      transports: ['websocket'],
+      query: {
+        im: 'admin'
+      }
     }),
     { store }
   )

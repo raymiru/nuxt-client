@@ -103,7 +103,7 @@ export default {
       this.$store.commit('errorMessageThrow', 'Loading')
       this.$socket.emit('auth', {
         type: 'admin',
-        username: null
+        username: 'admin'
       })
     },
 

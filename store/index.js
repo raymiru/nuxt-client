@@ -25,6 +25,9 @@ const store = () =>
       },
       playersSync(state, payload) {
         state.players = payload
+      },
+      playersMatchSync(state, payload) {
+        state.players[payload.index].match = payload.dataId
       }
     }
   })

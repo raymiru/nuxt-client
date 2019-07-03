@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$store.state.matches.length > 0">
+  <div v-if="$store.state.matches.length">
     <BetItem
       v-for="match in $store.state.matches"
       :key="match.DATA_ID"

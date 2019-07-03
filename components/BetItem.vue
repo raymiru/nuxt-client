@@ -1,6 +1,7 @@
 <template>
   <v-card>
-    <v-dialog v-model="dialog" max-width="700px" min-height="600px">
+    <!--STEAM API DIALOG-->
+    <v-dialog v-model="steamApiDialog" max-width="700px" min-height="600px">
       <v-card>
         <v-card-title>STEAM API DATA</v-card-title>
         <v-layout>
@@ -45,11 +46,48 @@
         </v-layout>
       </v-card>
     </v-dialog>
-    <v-container v-if="!reverse && !hide" :class="{ live: isLive }">
+
+    <v-dialog v-model="playersDialog" max-width="700px" min-height="600px">
+      <v-card>
+        <v-card-title>Players List</v-card-title>
+        <v-layout>
+          <v-flex md5>
+            <v-card-text>USER</v-card-text>
+          </v-flex>
+          <v-flex md5>
+            <v-card-text>BANK</v-card-text>
+          </v-flex>
+          <v-flex md2>
+            <v-card-text>Attach</v-card-text>
+          </v-flex>
+        </v-layout>
+        <v-layout
+          style="border-top: gray 2px groove"
+          v-for="(data, index) in $store.state.players"
+          :key="data.match_id"
+        >
+          <v-flex md5>
+            <v-card-text
+            >{{ data.username|| 'No Data' }}
+            </v-card-text>
+          </v-flex>
+          <v-flex md5>
+            <v-card-text>{{ data.bank || 'No Data' }}</v-card-text>
+          </v-flex>
+          <v-flex md2>
+            <v-btn @click="choosePlayer(dataId, index)">Choose</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-card>
+    </v-dialog>
+    <!--ПОЛНАЯ ВЕРСИЯ МАТЧА-->
+    <v-container v-if="!reverse && !hide"
+                 :class="{ live: isLive }">
       <v-card>
         <v-layout text-md-center style="border: gray 2px groove">
+          <!--ЛОГО ТУРНИРА И КНОПКИ-->
           <v-flex md2>
-            <v-img :src="tournamentLogo"></v-img>
+            <v-img :src="tournamentLogo || 'NO DATA'"></v-img>
             <v-layout pa-1 align-center row justify-center>
               <v-btn @click="reverse = !reverse">
                 <v-icon>repeat</v-icon>
@@ -59,23 +97,24 @@
               </v-btn>
             </v-layout>
             <v-layout row justify-center>
-              <v-btn @click="dialog = !dialog">
+              <v-btn @click="steamApiDialog = !steamApiDialog">
                 <v-icon>data_usage</v-icon>
               </v-btn>
-              <v-btn @click="func1">
+              <v-btn @click="playersDialog = !playersDialog">
                 <v-icon>fingerprint</v-icon>
               </v-btn>
             </v-layout>
           </v-flex>
-          <v-flex style="border: gray 2px groove" md2>
+          <!--КНОПКА ЛЕВОЙ КОМАНДЫ И КОЭФЦИЕНТЫ-->
+          <v-flex md2 style="border: gray 2px groove">
             <v-layout class="justify-space-between text-md-center">
-              <v-flex md6>
-                <v-layout column class="team_card" @click="chooseWinner(1)">
+              <v-flex md6 v-bind:class="{active_team_card: bet.winSide === 1}">
+                <v-layout column class="team_card"  @click="chooseWinner(1)">
                   <v-flex pa-2>
                     {{ teamA.NAME }}
                   </v-flex>
                   <v-flex class="pa-1">
-                    <v-img :src="teamA.LOGO"></v-img>
+                    <v-img :src="teamA.LOGO || 'NO DATA'"></v-img>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -105,6 +144,7 @@
               </v-flex>
             </v-layout>
           </v-flex>
+          <!--ФУНКЦИОНАЛ СТАВОК-->
           <v-flex md3>
             <v-layout column>
               <v-flex class="pa-2">
@@ -125,15 +165,16 @@
                 {{ bet.power }}
               </v-flex>
               <v-flex>
-                <v-btn>
+                <v-btn @click="placeBet">
                   {{ bet.power }}
                 </v-btn>
               </v-flex>
             </v-layout>
           </v-flex>
+          <!--КНОПКА ПРАВОЙ КОМАНДЫ И КОЭФИЦИЕНЫ-->
           <v-flex md2>
             <v-layout>
-              <v-flex style="border: gray 2px groove;" md6>
+              <v-flex md6 style="border: gray 2px groove;" >
                 <v-layout column>
                   <v-flex style="background-color: darkslategray;">
                     <v-card-text>
@@ -159,18 +200,19 @@
                   </v-flex>
                 </v-layout>
               </v-flex>
-              <v-flex style="border: gray 2px groove" md6>
+              <v-flex md6 style="border: gray 2px groove" v-bind:class="{active_team_card: bet.winSide === 2}">
                 <v-layout column class="team_card" @click="chooseWinner(2)">
                   <v-flex pa-2>
                     {{ teamB.NAME }}
                   </v-flex>
                   <v-flex class="pa-1">
-                    <v-img :src="teamB.LOGO"></v-img>
+                    <v-img :src="teamB.LOGO || 'NO DATA'"></v-img>
                   </v-flex>
                 </v-layout>
               </v-flex>
             </v-layout>
           </v-flex>
+          <!--СТАТИСТИКА МАТЧА-->
           <v-flex @click="heroesIcons" :class="randomClass" md4>
             <v-layout v-if="matchIndex !== null" fill-height>
               <v-flex md1 style="margin-left: 10px" v-if="filteredPlayers">
@@ -180,7 +222,7 @@
                 >
                   <v-flex class="hero_img"
                   >
-                    <v-img :src="value.imgSrc"></v-img
+                    <v-img :src="value.imgSrc || 'NO DATA'"></v-img
                     >
                   </v-flex>
                 </v-layout>
@@ -378,7 +420,7 @@
                 >
                   <v-flex class="hero_img"
                   >
-                    <v-img :src="value.imgSrc"></v-img
+                    <v-img :src="value.imgSrc || 'NO DATA'"></v-img
                     >
                   </v-flex>
                 </v-layout>
@@ -395,21 +437,22 @@
         </v-layout>
       </v-card>
     </v-container>
+    <!--ПЕРЕВЕРНУТАЯ ПОЛНАЯ ВЕРСИЯ МАТЧА-->
     <v-container v-if="reverse">
       <v-btn @click="reverse = !reverse">
         <v-icon>repeat</v-icon>
       </v-btn>
     </v-container>
-    <v-container
-      v-if="hide"
-      :class="{ live: isLive }"
-      text-md-center
-      justify-center
+    <!--СВЕРНУТАЯ ВЕРСИЯ-->
+    <v-container v-if="hide"
+                 :class="{ live: isLive }"
+                 text-md-center
+                 justify-center
     >
       <v-card :class="this.randomClass">
         <v-layout align-center style="border: gray 2px groove">
           <v-flex md2>
-            <v-img :src="tournamentLogo"></v-img>
+            <v-img :src="tournamentLogo || 'NO DATA'"></v-img>
           </v-flex>
           <v-flex md1>
             <v-btn @click="hideAndMap">
@@ -419,7 +462,7 @@
           <v-flex md1>
             <v-layout align-center>
               <v-flex md4>
-                <v-img :src="teamA.LOGO"></v-img>
+                <v-img :src="teamA.LOGO || 'NO DATA'"></v-img>
               </v-flex>
               <v-flex md8>
                 <v-card-text>{{ teamA.NAME | substr }}</v-card-text>
@@ -484,6 +527,7 @@
         if (value < 0) return value * -1
       }
     },
+
     props: {
       title: { type: String, default: 'string' },
       dataId: String,
@@ -492,12 +536,14 @@
       teamA: Object,
       teamB: Object
     },
+
     data() {
       return {
         randomClass: String,
         dota2Map: null,
         audio: null,
-        dialog: false,
+        steamApiDialog: false,
+        playersDialog: false,
         steamApiMatch: 0,
         bet: {
           power: 0.1,
@@ -585,6 +631,7 @@
         return steamIndex
       }
     },
+
     watch: {
       radiant_win: function() {
         this.someThing(sound4)
@@ -691,6 +738,23 @@
     },
 
     methods: {
+      placeBet: function () {
+        console.log(this.dataId)
+        this.$socket.emit('place_bet', {
+          dataId: this.dataId,
+          winSide: this.bet.winSide
+        })
+      },
+
+      choosePlayer: function(dataId, index) {
+        this.$store.commit('playersMatchSync', {
+          dataId,
+          index
+        })
+        console.log(dataId)
+        console.log(index)
+      },
+
       heroesIcons: function() {
         console.log('HEROES')
         this.$axios.$post('https://www.rmbets.site/api/heroes', {
@@ -782,6 +846,7 @@
         this.bet.winSide = winner
       },
       async chooseSteamApiMatch(data) {
+        this.radiant_win = null
         this.steamApiMatch = data
         this.$socket.emit('check_winner', {
           data_id: this.dataId,
@@ -802,7 +867,7 @@
           this.dota2Map.changeState(this.buildingState)
         }, 200)
 
-        this.playSound(sound4);
+        this.playSound(sound4)
         this.heroesIcons()
 
       }
@@ -840,6 +905,17 @@
 
   .team_card {
     cursor: pointer;
+  }
+  .active_team_card {
+    background-color: #d99b58;
+    /* IE9, iOS 3.2+ */
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxIDEiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjxsaW5lYXJHcmFkaWVudCBpZD0idnNnZyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIHN0b3AtY29sb3I9IiNjYTUyNTIiIHN0b3Atb3BhY2l0eT0iMSIgb2Zmc2V0PSIwIi8+PHN0b3Agc3RvcC1jb2xvcj0iI2U3ZTQ1ZSIgc3RvcC1vcGFjaXR5PSIxIiBvZmZzZXQ9IjEiLz48L2xpbmVhckdyYWRpZW50PjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjdnNnZykiIC8+PC9zdmc+);
+    background-image: -webkit-gradient(linear, 0% 0%, 100% 100%, color-stop(0, rgb(202, 82, 82)), color-stop(1, rgb(231, 228, 94)));
+    /* Android 2.3 */
+    background-image: -webkit-repeating-linear-gradient(top left, rgb(202, 81, 82) -0.8%, rgb(231, 228, 94) 100%);
+    /* IE10+ */
+    background-image: repeating-linear-gradient(to bottom right, rgb(202, 81, 82) -0.8%, rgb(231, 228, 94) 100%);
+    background-image: -ms-repeating-linear-gradient(top left, rgb(202, 81, 82) -0.8%, rgb(231, 228, 94) 100%);
   }
 
   .left_icon {
