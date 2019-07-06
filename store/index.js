@@ -8,7 +8,19 @@ const store = () =>
   new Vuex.Store({
     state: {
       errorMessage: '',
-      matches: [],
+
+      matches: {
+        mode: 'now',
+        status: 'all',
+        DOTA2: {
+          now: [],
+          next: []
+        },
+        CSGO: {
+          now: [],
+          next: []
+        }
+      },
       steamApiData: [],
       players: []
     },
@@ -17,9 +29,30 @@ const store = () =>
         state.errorMessage = payload
       },
 
-      matchesSync(state, payload) {
-        state.matches = payload
+      setMatchMode(state, payload) {
+        state.matches.mode = payload
       },
+
+      setMatchStatus(state, payload) {
+        state.matches.status = payload
+      },
+
+      matchesSyncDOTA2Now(state, payload) {
+        state.matches.DOTA2.now = payload
+      },
+
+      matchesSyncDOTA2Next(state, payload) {
+        state.matches.DOTA2.next = payload
+      },
+
+      matchesSyncCSGONow(state, payload) {
+        state.matches.CSGO.now = payload
+      },
+
+      matchesSyncCSGONext(state, payload) {
+        state.matches.CSGO.next = payload
+      },
+
       steamApiDataSync(state, payload) {
         state.steamApiData = payload
       },

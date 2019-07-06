@@ -284,8 +284,8 @@
                     <v-card-media>Dire Win</v-card-media>
                   </v-flex
                   >
-                  <v-flex md6 v-else>
-                    <v-card-media>Live</v-card-media>
+                  <v-flex class="live_map_text" md6 v-else>
+                    <v-card-media>{{statusString}}</v-card-media>
                   </v-flex>
                 </v-layout>
                 <v-divider></v-divider>
@@ -533,6 +533,7 @@
       dataId: String,
       tournamentLogo: String,
       status: String,
+      statusString: String,
       teamA: Object,
       teamB: Object
     },
@@ -867,7 +868,7 @@
           this.dota2Map.changeState(this.buildingState)
         }, 200)
 
-        this.playSound(sound4)
+        this.playSound(sound3)
         this.heroesIcons()
 
       }
@@ -983,5 +984,9 @@
   .hero_img {
     padding-top: 7px;
     padding-bottom: 7px;
+  }
+
+  .live_map_text {
+    font-size: 12px;
   }
 </style>
