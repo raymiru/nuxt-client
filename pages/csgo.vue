@@ -2,7 +2,7 @@
   <div>
     <div :class="{hide: $store.state.matches.mode === 'next'}">
       <div v-if="$store.state.matches.CSGO.now !== null">
-        <BetItem
+        <BetItemDota2
           v-for="match in $store.state.matches.CSGO.now"
           :class="{hide: match.STATUS !== $store.state.matches.status && $store.state.matches.status !== 'all'}"
           :key="match.DATA_ID"
@@ -11,7 +11,7 @@
           :status="match.STATUS"
           :teamA="match.TEAM_A"
           :teamB="match.TEAM_B"
-        ></BetItem>
+        ></BetItemDota2>
       </div>
       <div v-else>
         <v-card-text>{{ $store.state.errorMessage }}</v-card-text>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-  import BetItem from '~/components/BetItem.vue'
+  import BetItemDota2 from '~/components/BetItemDota2.vue'
   import Chance from 'chance'
 
   const chance = new Chance()
@@ -32,7 +32,7 @@
   export default {
     name: 'Index',
     components: {
-      BetItem
+      BetItemDota2
     },
     data() {
       return {

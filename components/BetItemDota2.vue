@@ -47,37 +47,161 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="playersDialog" max-width="700px" min-height="600px">
-      <v-card>
-        <v-card-title>Players List</v-card-title>
-        <v-layout>
-          <v-flex md5>
-            <v-card-text>USER</v-card-text>
-          </v-flex>
-          <v-flex md5>
-            <v-card-text>BANK</v-card-text>
-          </v-flex>
+    <!--PLAYERS DIALOG-->
+
+    <v-dialog v-model="playersDialog" max-width="1500px" min-height="600px">
+      <v-card v-if="status === 'live'">
+
+        <v-layout style="font-size: 13px">
           <v-flex md2>
-            <v-card-text>Attach</v-card-text>
+            <v-layout>
+              <v-flex md5>
+                <v-card-text>PLAYER</v-card-text>
+              </v-flex>
+              <v-flex md4>
+                <v-card-text>BANK</v-card-text>
+              </v-flex>
+              <v-flex md4>
+                <v-card-text>STATUS</v-card-text>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex offset-md1 md4>
+            <v-layout>
+              <v-flex md4>
+                <v-card-text class="teamDialog">{{teamA.NAME}}</v-card-text>
+              </v-flex>
+              <v-flex md3>
+                <v-card-text class="oddsDialog">x{{ odds.live.team_A.odd / 100 }}</v-card-text>
+              </v-flex>
+              <v-flex md3>
+                <v-card-text>TOTAL BET</v-card-text>
+              </v-flex>
+              <v-flex md3>
+                <v-card-text>TOTAL PWIN</v-card-text>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex md3 text-md-center>
+            <v-card-text>CONTROL</v-card-text>
+          </v-flex>
+          <v-flex md4>
+            <v-layout>
+              <v-flex md3>
+                <v-card-text>TOTAL PWIN</v-card-text>
+              </v-flex>
+              <v-flex md3>
+                <v-card-text>TOTAL BET</v-card-text>
+              </v-flex>
+              <v-flex md3>
+                <v-card-text class="oddsDialog">x{{ odds.live.team_B.odd / 100 }}</v-card-text>
+              </v-flex>
+              <v-flex md4>
+                <v-card-text class="teamDialog">{{teamB.NAME}}</v-card-text>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
-        <v-layout
+        <div
           style="border-top: gray 2px groove"
           v-for="(data, index) in $store.state.players"
-          :key="data.match_id"
-        >
-          <v-flex md5>
-            <v-card-text
-            >{{ data.username|| 'No Data' }}
-            </v-card-text>
-          </v-flex>
-          <v-flex md5>
-            <v-card-text>{{ data.bank || 'No Data' }}</v-card-text>
-          </v-flex>
-          <v-flex md2>
-            <v-btn @click="choosePlayer(dataId, index)">Choose</v-btn>
-          </v-flex>
-        </v-layout>
+          :key="data.match_id">
+          <v-layout
+            v-if="data.now_bets !== null && data.status === 'ready'">
+            <v-flex md2>
+              <v-layout>
+                <v-flex md5>
+                  <v-card-text>{{data.username}}</v-card-text>
+                </v-flex>
+                <v-flex md4>
+                  <v-card-text>{{data.bank}}</v-card-text>
+                </v-flex>
+                <v-flex md4>
+                  <v-card-text v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]">
+                    {{data.now_bets[dataId][statusBuilder].STATUS}}
+                  </v-card-text>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex offset-md1 md4>
+              <v-layout>
+                <v-flex md4>
+                  <v-card-text></v-card-text>
+                </v-flex>
+                <v-flex md3>
+                  <v-card-text v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]">x{{
+                    ((parseFloat(data.now_bets[dataId][statusBuilder].LEFT_BET.TOTAL_BET) +
+                    parseFloat(data.now_bets[dataId][statusBuilder].LEFT_BET.TOTAL_PWIN)) /
+                    parseFloat(data.now_bets[dataId][statusBuilder].LEFT_BET.TOTAL_BET)).toFixed(2) }}
+                  </v-card-text>
+                </v-flex>
+                <v-flex md3>
+                  <v-card-text v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]">
+                    {{data.now_bets[dataId][statusBuilder].LEFT_BET.TOTAL_BET}}
+                  </v-card-text>
+                </v-flex>
+                <v-flex md3>
+                  <v-card-text v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]">
+                    {{data.now_bets[dataId][statusBuilder].LEFT_BET.TOTAL_PWIN}}
+                  </v-card-text>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex md3 text-md-center>
+              <v-layout>
+                <v-flex md3>
+                  <v-text-field mask="###"  v-model="bet.left[data.username]"
+                                label='BET SIZE'></v-text-field>
+                </v-flex>
+                <v-flex md6>
+                  <v-layout>
+                    <v-btn v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]"
+                           :class="{disable_events: data.now_bets[dataId][statusBuilder].STATUS === 'timeout' || !bet.left[data.username] || teamA.LOCK} "
+                           @click="singleBet(data.username, 1, bet.left[data.username])" fab>L
+                    </v-btn>
+                    <v-btn v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]"
+                           :class="{disable_events: data.now_bets[dataId][statusBuilder].STATUS === 'timeout' || !bet.right[data.username] || teamB.LOCK} "
+                           @click="singleBet(data.username, 3, bet.right[data.username]) " fab>R
+                    </v-btn>
+                  </v-layout>
+                </v-flex>
+                <v-flex md3>
+                  <v-text-field mask="###"  v-model="bet.right[data.username]"
+                                label='BET SIZE'></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex md4>
+              <v-layout>
+                <v-flex md3>
+                  <v-card-text v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]">
+                    {{data.now_bets[dataId][statusBuilder].RIGHT_BET.TOTAL_PWIN}}
+                  </v-card-text>
+                </v-flex>
+                <v-flex md3>
+                  <v-card-text v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]">
+                    {{data.now_bets[dataId][statusBuilder].RIGHT_BET.TOTAL_BET}}
+                  </v-card-text>
+                </v-flex>
+                <v-flex md3>
+                  <v-card-text v-if="data.now_bets && data.now_bets[dataId] && data.now_bets[dataId][statusBuilder]">x{{
+                    ((parseFloat(data.now_bets[dataId][statusBuilder].RIGHT_BET.TOTAL_BET) +
+                    parseFloat(data.now_bets[dataId][statusBuilder].RIGHT_BET.TOTAL_PWIN)) /
+                    parseFloat(data.now_bets[dataId][statusBuilder].RIGHT_BET.TOTAL_BET)).toFixed(2) }}
+                  </v-card-text>
+                </v-flex>
+                <v-flex md4>
+                  <v-card-text></v-card-text>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+        </div>
+      </v-card>
+      <v-card v-else>
+        <v-flex text-md-center>
+          <v-card-text>NO LIVE</v-card-text>
+        </v-flex>
       </v-card>
     </v-dialog>
     <!--ПОЛНАЯ ВЕРСИЯ МАТЧА-->
@@ -106,39 +230,38 @@
             </v-layout>
           </v-flex>
           <!--КНОПКА ЛЕВОЙ КОМАНДЫ И КОЭФЦИЕНТЫ-->
-          <v-flex md2 style="border: gray 2px groove">
+          <v-flex md2>
             <v-layout class="justify-space-between text-md-center">
-              <v-flex md6 v-bind:class="{active_team_card: bet.winSide === 1}">
-                <v-layout column class="team_card"  @click="chooseWinner(1)">
+              <v-flex md6 class="team_card" :class="{disable_events: teamA.LOCK || status !=='live'}">
+                <v-layout column fill-height :class="{active_team_card: bet.winSide === 1}" @click="chooseWinner(1)">
                   <v-flex pa-2>
                     {{ teamA.NAME }}
                   </v-flex>
-                  <v-flex class="pa-1">
+                  <v-flex pa-1>
                     <v-img :src="teamA.LOGO || 'NO DATA'"></v-img>
                   </v-flex>
                 </v-layout>
               </v-flex>
-              <v-flex style="border: gray 2px groove;" md6>
+              <v-flex md6>
                 <v-layout column>
-                  <v-flex style="background-color: darkslategray;">
-                    <v-card-text v-if="isLive">
-                      <div class="odds">x{{ odds.live.team_A.odd / 100 }}</div>
+                  <v-flex>
+                    <v-card-text >
+                      <div :class="{vilka: (1/((rightTotalBet + rightTotalPWin)/rightTotalBet)) + (1/(odds.live.team_A.odd / 100)) < 1 }" class="odds">x{{ odds.live.team_A.odd / 100 }}</div>
                       <div class="max">
                         {{ odds.live.team_A.max / 100 }}
                       </div>
                     </v-card-text>
-                    <v-card-text v-else>
-                      <div class="odds">x{{ odds.soon.team_A.odd / 100 }}</div>
-                      <div class="max">
-                        {{ odds.soon.team_A.max }}
-                      </div>
+
+                  </v-flex>
+                  <v-flex>
+                    <v-card-text class="main_stat_item">TB: {{leftTotalBet}}</v-card-text>
+                  </v-flex>
+                  <v-flex>
+                    <v-card-text class="main_stat_item">PW: {{leftTotalPWin.toFixed(2)}}</v-card-text>
+                  </v-flex>
+                  <v-flex>
+                    <v-card-text class="main_stat_item">x{{((leftTotalBet + leftTotalPWin)/leftTotalBet).toFixed(2)}}
                     </v-card-text>
-                  </v-flex>
-                  <v-flex>
-                    <v-card-text>100</v-card-text>
-                  </v-flex>
-                  <v-flex>
-                    <v-card-text>46</v-card-text>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -149,24 +272,41 @@
             <v-layout column>
               <v-flex class="pa-2">
                 <v-layout>
-                  <v-btn small fab @click="changeBetPower(0.05)">Min</v-btn>
+                  <v-btn small fab @click="changeBetPower('min')">Min</v-btn>
 
-                  <v-slider
-                    v-model="bet.power"
-                    :max="1"
-                    :min="0.05"
-                    :step="0.01"
+                  <v-slider style=" height: 10px;" v-if="bet.winSide === 1"
+                            v-model="bet.power"
+                            :max="listReadyPlayers.length * (odds.live.team_A.max / 100)"
+                            :min="10"
+                            :step="10"
                   >
                   </v-slider>
-                  <v-btn small fab @click="changeBetPower(1)">Max</v-btn>
+                  <v-slider style=" height: 10px;" v-else-if="bet.winSide === 3"
+                            v-model="bet.power"
+                            :max="listReadyPlayers.length * (odds.live.team_B.max / 100)"
+                            :min="10"
+                            :step="10"
+                  >
+                  </v-slider>
+                  <v-btn small fab @click="changeBetPower('max')">Max</v-btn>
                 </v-layout>
               </v-flex>
               <v-flex class="pa-1">
-                {{ bet.power }}
+                <v-layout text-md-center>
+                  <v-flex md3>TP: {{(leftTotalPWin - rightTotalBet).toFixed(2)}}</v-flex>
+                  <v-flex md3 :class="{emptyAP: !listReadyPlayers.length}" style="margin-right: 25px; color: orange; font-size: 16px">AP: {{listReadyPlayers.length}}</v-flex>
+                  <v-flex md3 style="font-size: 16px; color: yellow" >BP: {{bet.power}}</v-flex>
+                  <!--<v-flex md3><v-select-->
+                    <!--/></v-flex>-->
+                  <v-flex md3>TP: {{(rightTotalPWin - leftTotalBet).toFixed(2)}}</v-flex>
+                </v-layout>
               </v-flex>
               <v-flex>
                 <v-btn @click="placeBet">
-                  {{ bet.power }}
+                  FORCE
+                </v-btn>
+                <v-btn :class="{disable_events: !listReadyPlayers.length} " @click="func1">
+                  NORMAL
                 </v-btn>
               </v-flex>
             </v-layout>
@@ -174,34 +314,31 @@
           <!--КНОПКА ПРАВОЙ КОМАНДЫ И КОЭФИЦИЕНЫ-->
           <v-flex md2>
             <v-layout>
-              <v-flex md6 style="border: gray 2px groove;" >
+              <v-flex md6>
                 <v-layout column>
-                  <v-flex style="background-color: darkslategray;">
+                  <v-flex>
                     <v-card-text>
-                      <div class="odds">x{{ odds.live.team_B.odd / 100 }}</div>
+                      <div :class="{vilka: (1/((leftTotalBet + leftTotalPWin)/leftTotalBet)) + (1/(odds.live.team_B.odd / 100)) < 1 }" class="odds">x{{ odds.live.team_B.odd / 100 }}</div>
                       <div class="max">
                         {{ odds.live.team_B.max / 100 }}
                       </div>
                     </v-card-text>
                   </v-flex>
                   <v-flex>
-                    <v-layout>
-                      <v-flex>
-                        <v-card-text>35</v-card-text>
-                      </v-flex>
-                    </v-layout>
+                    <v-card-text class="main_stat_item">TB: {{rightTotalBet}}</v-card-text>
                   </v-flex>
                   <v-flex>
-                    <v-layout>
-                      <v-flex>
-                        <v-card-text>14523</v-card-text>
-                      </v-flex>
-                    </v-layout>
+                    <v-card-text class="main_stat_item">PW: {{rightTotalPWin.toFixed(2)}}</v-card-text>
+                  </v-flex>
+                  <v-flex>
+                    <v-card-text class="main_stat_item">x{{((rightTotalBet +
+                      rightTotalPWin)/rightTotalBet).toFixed(2)}}
+                    </v-card-text>
                   </v-flex>
                 </v-layout>
               </v-flex>
-              <v-flex md6 style="border: gray 2px groove" v-bind:class="{active_team_card: bet.winSide === 2}">
-                <v-layout column class="team_card" @click="chooseWinner(2)">
+              <v-flex md6 class="team_card" :class="{disable_events: teamB.LOCK || status !=='live'}">
+                <v-layout column fill-height :class="{active_team_card: bet.winSide === 3}" @click="chooseWinner(3)">
                   <v-flex pa-2>
                     {{ teamB.NAME }}
                   </v-flex>
@@ -214,7 +351,7 @@
           </v-flex>
           <!--СТАТИСТИКА МАТЧА-->
           <v-flex @click="heroesIcons" :class="randomClass" md4>
-            <v-layout v-if="matchIndex !== null" fill-height>
+            <v-layout v-if="matchIndex !== null">
               <v-flex md1 style="margin-left: 10px" v-if="filteredPlayers">
                 <v-layout
                   v-for="value in filteredPlayers.radiant_team"
@@ -231,7 +368,7 @@
               <v-flex md5>
                 <v-layout>
                   <v-flex
-                    pa-2
+                    pa-1
                     class="score_title"
                     v-if="
                       $store.state.steamApiData[matchIndex].team_name_radiant
@@ -245,11 +382,11 @@
                     </v-card-media>
                   </v-flex>
                   <v-flex v-else md6>
-                    <v-card-title>Radiant</v-card-title>
+                    <v-card-media>Radiant</v-card-media>
                   </v-flex>
 
                   <v-flex
-                    pa-2
+                    pa-1
                     class="score_title"
                     v-if="$store.state.steamApiData[matchIndex].team_name_dire"
                     md6
@@ -261,7 +398,7 @@
                     </v-card-media>
                   </v-flex>
                   <v-flex v-else md6>
-                    <v-card-title>Dire</v-card-title>
+                    <v-card-media>Dire</v-card-media>
                   </v-flex>
                 </v-layout>
 
@@ -449,29 +586,83 @@
                  text-md-center
                  justify-center
     >
-      <v-card :class="this.randomClass">
+      <v-card>
         <v-layout align-center style="border: gray 2px groove">
           <v-flex md2>
-            <v-img :src="tournamentLogo || 'NO DATA'"></v-img>
+            <v-img :src="tournamentLogo"></v-img>
           </v-flex>
           <v-flex md1>
-            <v-btn @click="hideAndMap">
+            <v-btn round @click="hideAndMap">
               <v-icon>reorder</v-icon>
             </v-btn>
           </v-flex>
-          <v-flex md1>
+          <v-flex pa-1 md2 class="team_card_mini">
             <v-layout align-center>
-              <v-flex md4>
-                <v-img :src="teamA.LOGO || 'NO DATA'"></v-img>
+              <v-flex md3>
+                <v-img :src="teamA.LOGO"></v-img>
               </v-flex>
-              <v-flex md8>
-                <v-card-text>{{ teamA.NAME | substr }}</v-card-text>
+              <v-flex md7>
+                <v-card-text>{{ teamA.NAME }}</v-card-text>
+              </v-flex>
+              <v-flex md2>x{{ odds.live.team_A.odd / 100 }}</v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex md1 class="odds_left">
+            <v-layout align-center>
+
+              <v-flex pa-1 md12 class="stats_mini">
+                <v-layout>
+                  <v-flex md6 v-if="$store.state.steamApiData[matchIndex]">{{
+                    $store.state.steamApiData[matchIndex].radiant_score
+                    }}
+                  </v-flex>
+                  <v-flex md6 v-else>N/A</v-flex>
+                  <v-flex v-if="$store.state.steamApiData[matchIndex]" class="gold_lead_mini_left" md6>{{
+                    $store.state.steamApiData[matchIndex].radiant_lead
+                    | goldRadiantFilter
+                    }}
+                  </v-flex>
+                  <v-flex md6 v-else>N/A</v-flex>
+                </v-layout>
               </v-flex>
             </v-layout>
           </v-flex>
 
-          <v-flex md1>
-            <v-card-text>{{ teamB.NAME | substr }}</v-card-text>
+          <v-flex pa-1 md1 class="info_text">
+            {{statusString}}
+          </v-flex>
+
+          <v-flex md1 class="odds_right">
+            <v-layout align-center>
+              <v-flex pa-1 md12 class="stats_mini">
+                <v-layout>
+                  <v-flex v-if="$store.state.steamApiData[matchIndex]" class="gold_lead_mini_right" md6>{{
+                    $store.state.steamApiData[matchIndex].radiant_lead
+                    | goldDireFilter
+                    }}
+                  </v-flex>
+                  <v-flex md6 v-else>N/A</v-flex>
+                  <v-flex md6 v-if="$store.state.steamApiData[matchIndex]">{{
+                    $store.state.steamApiData[matchIndex].dire_score
+                    }}
+                  </v-flex>
+                  <v-flex md6 v-else>N/A</v-flex>
+                </v-layout>
+              </v-flex>
+
+            </v-layout>
+          </v-flex>
+
+          <v-flex pa-1 md2 class="team_card_mini">
+            <v-layout align-center>
+              <v-flex md2>x{{ odds.live.team_B.odd / 100 }}</v-flex>
+              <v-flex md7>
+                <v-card-text>{{ teamB.NAME }}</v-card-text>
+              </v-flex>
+              <v-flex md3>
+                <v-img :src="teamB.LOGO"></v-img>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
       </v-card>
@@ -484,13 +675,29 @@
   import sound2 from '@/assets/sound2.mp3'
   import sound3 from '@/assets/naruto_flute.mp3'
   import sound4 from '@/assets/in_the_end.mp3'
+  import Chance from 'chance'
   import { Dota2Map } from './Dota2Map'
 
 
+  const chance = new Chance()
+
   export default {
-    name: 'BetItem',
+    name: 'BetItemDota2',
 
     filters: {
+
+      moreThenMaxLeft(value) {
+        if (value > odds.live.team_A.odd / 100) {
+          return odds.live.team_A.odd / 100
+        }
+      },
+
+      moreThenMaxRight(value) {
+        if (value > odds.live.team_B.odd / 100) {
+          return odds.live.team_B.odd / 100
+        }
+      },
+
       to8num: function to8num(value) {
         // Аргументы: строка, система счисления
         return value.toString(8)
@@ -534,6 +741,7 @@
       tournamentLogo: String,
       status: String,
       statusString: String,
+      statusBuilder: String,
       teamA: Object,
       teamB: Object
     },
@@ -547,7 +755,9 @@
         playersDialog: false,
         steamApiMatch: 0,
         bet: {
-          power: 0.1,
+          left: {},
+          right: {},
+          power: 10,
           winSide: false,
           playersInGame: {
             active: 0,
@@ -619,6 +829,89 @@
     },
 
     computed: {
+
+      leftPWinProfit() {
+        let totalProfit = 0
+
+
+        this.$store.state.players.forEach(player => {
+          if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
+            totalProfit = parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_PWIN) - parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_BET)
+          }
+        })
+        return totalProfit
+      },
+
+      rightPWinProfit() {
+        let totalProfit = 0
+
+
+        this.$store.state.players.forEach(player => {
+          if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
+            totalProfit = parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_PWIN) - parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_BET)
+          }
+        })
+        return totalProfit
+      },
+
+      listReadyPlayers() {
+        let readyPlayers = []
+        this.$store.state.players.forEach(player => {
+          if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
+            if (player.status === 'ready' && player.now_bets[this.dataId][this.statusBuilder].STATUS === 'ready') {
+              readyPlayers.push(player.username)
+            }
+
+          }
+        })
+        return readyPlayers
+      },
+
+
+      leftTotalBet() {
+        let totalBet = 0
+
+
+        this.$store.state.players.forEach(player => {
+          if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
+            totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_BET)
+          }
+        })
+        return totalBet
+      },
+
+      rightTotalBet() {
+        let totalBet = 0
+        this.$store.state.players.forEach(player => {
+          if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
+            totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_BET)
+          }
+        })
+        return totalBet
+      },
+
+      leftTotalPWin() {
+        let totalBet = 0
+
+
+        this.$store.state.players.forEach(player => {
+          if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
+            totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_PWIN)
+          }
+        })
+        return totalBet
+      },
+
+      rightTotalPWin() {
+        let totalBet = 0
+        this.$store.state.players.forEach(player => {
+          if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
+            totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_PWIN)
+          }
+        })
+        return totalBet
+      },
+
       isLive: function() {
         return this.status === 'live'
       },
@@ -634,6 +927,31 @@
     },
 
     watch: {
+      'teamA.LOCK': function(newVal) {
+        console.log('WATCH')
+        console.log(newVal)
+        if (newVal) {
+          if (this.bet.winSide === 1) {
+            this.bet.winSide = null
+          }
+        }
+      },
+      'teamB.LOCK': function(newVal) {
+        console.log('WATCH')
+        console.log(newVal)
+        if (newVal) {
+          if (this.bet.winSide === 3) {
+            this.bet.winSide = null
+          }
+        }
+      },
+      //
+      // 'bet.right.data.username': function(newVal, oldVal) {
+      //   if (newVal > (odds.live.team_B.odd / 100) ) {
+      //     this.bet.right.data.username = odds.live.team_B.odd / 100
+      //   }
+      // },
+
       radiant_win: function() {
         this.someThing(sound4)
       },
@@ -739,7 +1057,43 @@
     },
 
     methods: {
-      placeBet: function () {
+      clearValLeft(username) {
+        if (this.bet.left[username]) {
+          this.bet.left[username] = ''
+        }
+      },
+
+      clearValRight(username) {
+        if (this.bet.right[username]) {
+          this.bet.right[username] = ''
+        }
+
+      },
+
+
+      singleBet(username, winSide, betSize) {
+        console.log({
+          username,
+          winSide,
+          betSize
+        })
+        this.$socket.emit('single_bet', {
+          dataId: this.dataId,
+          statusBuilder: this.statusBuilder,
+          username,
+          winSide,
+          betSize
+        })
+        this.bet.left[username] = ''
+        this.bet.right[username] = ''
+      },
+
+      placeBetFast() {
+        console.log('PLACE BET FAST')
+        this.$socket.emit()
+      },
+
+      placeBet: function() {
         console.log(this.dataId)
         this.$socket.emit('place_bet', {
           dataId: this.dataId,
@@ -777,9 +1131,147 @@
         }, 200)
       },
 
-      func1: function() {
-        this.testData = 15
+      func1() {
+        const multiBet = (readyPlayers, maxBet, needSum, betType) => {
+          let finishBetArray = []
+
+
+          const randomFromReadyPlayersList = (currentReadyPlayers) => {
+            try {
+              if (currentReadyPlayers.length >= 1) {
+                let random = chance.integer({ min: 0, max: currentReadyPlayers.length - 1 })
+
+                let randomPlayer = currentReadyPlayers[random]
+                currentReadyPlayers.splice(random, 1)
+
+                return randomPlayer
+              }
+            } catch (e) {
+              console.error(e)
+            }
+          }
+
+          const randomSingleBet = (maxBet) => {
+            try {
+              if (maxBet) {
+                let item = maxBet / 10
+                if (chance.integer({ min: 0, max: 10 }) > 4) {
+                  return maxBet
+                } else {
+                  return 10 * (chance.integer({ min: 1, max: item }))
+                }
+              }
+            } catch (e) {
+              console.error(e)
+            }
+          }
+
+          const fullBet = () => {
+            let currentReadyPlayers = [...readyPlayers]
+            let currentNeedSumm = needSum
+            while (currentNeedSumm > 0) {
+
+
+              if (currentNeedSumm >= maxBet) {
+                finishBetArray.push({
+                  player: randomFromReadyPlayersList(currentReadyPlayers),
+                  bet: maxBet
+                })
+                currentNeedSumm -= maxBet
+
+              } else if (currentNeedSumm < maxBet) {
+                finishBetArray.push({
+                  player: randomFromReadyPlayersList(currentReadyPlayers),
+                  bet: currentNeedSumm
+                })
+                currentNeedSumm -= currentNeedSumm
+              }
+
+            }
+          }
+
+          const randomBet = () => {
+            let currentReadyPlayers = [...readyPlayers]
+            let currentNeedSumm = needSum
+            let startLength = readyPlayers.length
+            let tempCount = 0
+            while (currentNeedSumm > 0) {
+              let currentBet = 0
+              if (currentNeedSumm > maxBet) {
+                tempCount++
+
+
+                currentBet = randomSingleBet(maxBet)
+                finishBetArray.push({
+                  player: randomFromReadyPlayersList(currentReadyPlayers),
+                  bet: currentBet
+                })
+
+                currentNeedSumm -= currentBet
+              } else if (currentNeedSumm <= maxBet) {
+                tempCount++
+
+
+                finishBetArray.push({
+                  player: randomFromReadyPlayersList(currentReadyPlayers),
+                  bet: currentNeedSumm
+                })
+
+                currentNeedSumm -= currentNeedSumm
+              }
+
+              if (tempCount > startLength) {
+                currentNeedSumm = 0
+                currentReadyPlayers = [...readyPlayers]
+                finishBetArray = []
+
+                fullBet()
+              }
+
+            }
+          }
+
+          try {
+            if (betType === 'full') {
+              fullBet()
+
+            } else if (betType === 'random') {
+              randomBet()
+            }
+          } catch (e) {
+            console.error(e)
+          }
+
+          return finishBetArray
+
+        }
+
+
+        let maxBet = 0
+
+        if (this.bet.winSide === 1) {
+          maxBet = this.odds.live.team_A.max / 100
+        } else if (this.bet.winSide === 3) {
+          maxBet = this.odds.live.team_B.max / 100
+        }
+
+
+        console.log(maxBet)
+
+        if (this.listReadyPlayers.length !== 0 && maxBet !== 0 && this.bet.power !== 0) {
+          console.log('multiBet')
+          let multiBetArr = multiBet(this.listReadyPlayers, maxBet, this.bet.power, 'random')
+          this.$socket.emit('multi_bet_dota2', {
+            dataId: this.dataId,
+            statusBuilder: this.statusBuilder,
+            betArr: multiBetArr,
+            winSide: this.bet.winSide
+
+          })
+        }
+
       },
+
 
       playSound(sound) {
         let audio = new Audio(sound)
@@ -841,7 +1333,16 @@
       },
 
       changeBetPower(power) {
-        this.bet.power = power
+        if (power=== 'max') {
+          if (this.bet.winSide === 1) {
+            this.bet.power = this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)
+          } else if (this.bet.winSide === 3) {
+            this.bet.power = this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)
+          }
+        } else if (power === 'min') {
+          this.bet.power = 10
+        }
+
       },
       chooseWinner(winner) {
         this.bet.winSide = winner
@@ -872,7 +1373,8 @@
         this.heroesIcons()
 
       }
-    },
+    }
+    ,
 
     sockets: {
       updatematch_dota: function(data) {
@@ -906,17 +1408,17 @@
 
   .team_card {
     cursor: pointer;
+    border: wheat 1px groove;
+    background-color: darkslategray;
   }
+
+  .team_card_mini {
+    border: wheat 1px groove;
+    background-color: darkslategray;
+  }
+
   .active_team_card {
-    background-color: #d99b58;
-    /* IE9, iOS 3.2+ */
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxIDEiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjxsaW5lYXJHcmFkaWVudCBpZD0idnNnZyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIHN0b3AtY29sb3I9IiNjYTUyNTIiIHN0b3Atb3BhY2l0eT0iMSIgb2Zmc2V0PSIwIi8+PHN0b3Agc3RvcC1jb2xvcj0iI2U3ZTQ1ZSIgc3RvcC1vcGFjaXR5PSIxIiBvZmZzZXQ9IjEiLz48L2xpbmVhckdyYWRpZW50PjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjdnNnZykiIC8+PC9zdmc+);
-    background-image: -webkit-gradient(linear, 0% 0%, 100% 100%, color-stop(0, rgb(202, 82, 82)), color-stop(1, rgb(231, 228, 94)));
-    /* Android 2.3 */
-    background-image: -webkit-repeating-linear-gradient(top left, rgb(202, 81, 82) -0.8%, rgb(231, 228, 94) 100%);
-    /* IE10+ */
-    background-image: repeating-linear-gradient(to bottom right, rgb(202, 81, 82) -0.8%, rgb(231, 228, 94) 100%);
-    background-image: -ms-repeating-linear-gradient(top left, rgb(202, 81, 82) -0.8%, rgb(231, 228, 94) 100%);
+    background-color: #883433 !important;
   }
 
   .left_icon {
@@ -965,16 +1467,16 @@
 
   .kills_change {
     color: coral;
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .gold_lead {
-    font-size: 15px;
+    font-size: 14px;
     color: gold;
   }
 
   .kills {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .score_title {
@@ -982,11 +1484,53 @@
   }
 
   .hero_img {
-    padding-top: 7px;
-    padding-bottom: 7px;
+    padding-top: 6px;
+    padding-bottom: 6px;
   }
 
   .live_map_text {
     font-size: 12px;
+  }
+
+  .gold_lead_mini_left {
+    color: gold;
+
+  }
+
+  .gold_lead_mini_right {
+    color: gold;
+
+  }
+
+  .stats_mini {
+    border: wheat 1px groove;
+  }
+
+  .disable_events {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .oddsDialog {
+    font-size: 16px;
+  }
+
+  .teamDialog {
+    font-size: 18px;
+    font-weight: normal;
+    color: greenyellow;
+  }
+
+  .main_stat_item {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+
+  .vilka {
+    color: greenyellow;
+  }
+
+  .emptyAP {
+    color: whitesmoke!important; ;
   }
 </style>
