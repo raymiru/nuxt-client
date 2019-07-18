@@ -15,7 +15,7 @@ export default {
       }
     ],
     script: [
-      { src: 'https://embed.twitch.tv/embed/v1.js'}
+      { src: 'https://embed.twitch.tv/embed/v1.js'},
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

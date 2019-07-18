@@ -132,13 +132,11 @@
       <v-spacer></v-spacer>
       <v-toolbar-title>PLAYERS:</v-toolbar-title>
       <v-btn value="sync" @click="playersSyncRequest">SYNC</v-btn>
-      <v-btn value="rand_reload" @click="setMatchStatus('all')">RAND.RELOAD</v-btn>
+      <v-btn value="rand_reload" @click="allPlayersToReady">NOW</v-btn>
       <v-spacer></v-spacer>
-      <v-toolbar-title style="margin-left: 3%">DOTA2 WATCHER</v-toolbar-title>
-        <v-btn value="dota2" @click="updateWatcher('dota2')"><v-icon>refresh</v-icon></v-btn>
-      <v-toolbar-title style="margin-left: 3%">CSGO WATCHER</v-toolbar-title>
-        <v-btn value="csgo" @click="updateWatcher('csgo')"><v-icon>refresh</v-icon></v-btn>
-
+      <v-toolbar-title style="margin-left: 3%">WATCHER</v-toolbar-title>
+        <v-btn value="dota2" @click="updateWatcher('dota2')">DOTA2</v-btn>
+      <v-btn value="csgo" @click="updateWatcher('csgo')">CSGO</v-btn>
 
 
 
@@ -155,6 +153,13 @@
                transition="scale-transition"
 
       >{{playerDisconnectUsername}} отключился!
+      </v-alert>
+      <v-alert @click="playerBetErrorAlert = !playerBetErrorAlert" text-md-center style="width: 1000px"
+               v-model="playerBetErrorAlert"
+               type="error"
+               transition="scale-transition"
+
+      >{{playerBetErrorUsername}} : {{playerBetErrorMsg}}
       </v-alert>
       <v-alert @click="newMatchAdded = !newMatchAdded" text-md-center style="width: 1000px"
                v-model="newMatchAdded"
@@ -175,8 +180,13 @@
 </template>
 
 <script>
+
+  import sound from '@/assets/error.mp3'
+
+
   export default {
     name: 'default',
+    matchIndex: 0,
     data() {
       return {
         newMatchAdded: false,
@@ -192,6 +202,9 @@
         logs: [1, 2, 3, 4, 'dasdas', 'dasdasd', 'dasdqweqweqsdas dasdasdsada sdasdas das123123123 12123', 312312],
         playerConnectUsername: null,
         playerDisconnectUsername: null,
+        playerBetErrorUsername: null,
+        playerBetErrorMsg: null,
+        playerBetErrorAlert: null,
         playerConnectAlert: false,
         playerDisconnectAlert: false,
         errorMessage: 'Матчи не найдены. Проверьте Manager и Watcher',
@@ -211,6 +224,14 @@
     },
 
     methods: {
+      playSound(sound) {
+        console.log('ADUOO')
+        let audio = new Audio(sound)
+
+        audio.volume = 0.5
+        audio.play()
+      },
+
       playersSyncRequest() {
         console.log('players sync request')
         this.$socket.emit('players_sync_request')
@@ -246,7 +267,24 @@
 
       setMatchStatus: function(status) {
         this.$store.commit('setMatchStatus', status)
+      },
+
+      allPlayersToReady: function() {
+        this.$socket.emit('all_players_to_ready');
       }
+
+    },
+
+    mounted(){
+      window.addEventListener('keydown', e => {
+        // console.log(e)
+        // console.log(this.$store.state.matches.DOTA2.now.length)
+      })
+
+    },
+
+    computed: {
+
 
     },
     sockets: {
@@ -362,6 +400,16 @@
             this.playerDisconnectAlert = false
           }, 7000)
         }
+      },
+
+      bet_error(data) {
+        this.playerBetErrorUsername = data.username
+        this.playerBetErrorMsg = data.msg
+        this.playerBetErrorAlert = !this.playerBetErrorAlert
+        this.playSound(sound)
+        setTimeout(() => {
+          this.playerBetErrorAlert = false
+        }, 7000)
       }
     },
 
