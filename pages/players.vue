@@ -39,7 +39,7 @@
             </td>
             <td class="td">{{props.item.status}}</td>
             <td class="td">
-              <v-btn-toggle :class="{disable_events: props.item.status === 'exit'}" :value="props.item.status">
+              <v-btn-toggle  :value="props.item.status">
                 <v-btn fab @click="setStatus('ready', props.item.username)" value="ready">RDY</v-btn>
                 <v-btn fab @click="setStatus('moving', props.item.username)" value="moving">MOVE</v-btn>
                 <v-btn fab @click="setStatus('2window', props.item.username)" value="2window">2WIN</v-btn>

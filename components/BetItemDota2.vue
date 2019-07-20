@@ -1,5 +1,5 @@
 <template>
-  <v-card :tabindex="index" :id="index" class="matchWrap">
+  <v-card :tabindex="index" :id="index" :data-id="dataId" class="matchWrap" :class="{ live: isLive }">
     <!--STEAM API DIALOG-->
     <v-dialog v-model="steamApiDialog" max-width="700px" min-height="600px">
       <v-card>
@@ -321,7 +321,7 @@
     </v-dialog>
     <!--ПОЛНАЯ ВЕРСИЯ МАТЧА-->
     <v-container v-if="!hide"
-                 :class="{ live: isLive }">
+    >
       <v-card>
         <v-layout text-md-center style="border: grey 2px groove">
           <!--ЛОГО ТУРНИРА И КНОПКИ-->
@@ -471,7 +471,8 @@
             <v-layout column fill-height class="stat_layout">
               <v-flex class="pa-2">
                 <v-layout>
-                  <v-btn tabindex="-1" small fab @click="changeBetPower('f1')">F1</v-btn>
+                  <v-card-media>{{this.dataId}}</v-card-media>
+                  <!--<v-btn tabindex="-1" small fab @click="changeBetPower('f1')">F1</v-btn>-->
                   <v-btn tabindex="-1" small fab @click="changeBetPower('min')">Min</v-btn>
                   <v-btn tabindex="-1" small fab @click="changeBetPower('max')">Max</v-btn>
 
@@ -895,7 +896,7 @@
 
     <!--СВЕРНУТАЯ ВЕРСИЯ-->
     <v-container v-if="hide"
-                 :class="{ live: isLive }"
+
                  text-md-center
                  justify-center
     >
@@ -905,7 +906,7 @@
             <v-img :src="tournamentLogo"></v-img>
           </v-flex>
           <v-flex md1>
-            <v-btn tabindex="-1" round @click="hideAndMap">
+            <v-btn tabindex="-1" @click="hideAndMap">
               <v-icon>reorder</v-icon>
             </v-btn>
           </v-flex>
@@ -1303,62 +1304,88 @@
       }
     },
     mounted() {
-      window.addEventListener('keydown', e => {
+      let allowed = true
+      document.querySelector(`[data-id="${this.dataId.toString()}"]`).addEventListener('keydown', e => {
+      // if (document.activeElement.getAttribute('data-id') == this.dataId) {
+        if (document.activeElement.getAttribute('data-id') === this.dataId.toString()) {
 
-        if (document.activeElement === document.getElementById(this.index)) {
-          if (!this.reverse) {
-            if ( e.key === 'ArrowLeft' && !this.teamA.LOCK) {
-              this.bet.winSide = 1
-            } else if (e.key === 'ArrowRight' && !this.teamB.LOCK) {
-              this.bet.winSide = 3
+            if (e.repeat !== undefined) {
+              allowed = !e.repeat
             }
-          } else if (this.reverse) {
-            if (e.key === 'ArrowLeft' && !this.teamB.LOCK) {
-              this.bet.winSide = 3
-            } else if (e.key === 'ArrowRight' && !this.teamA.LOCK) {
-              this.bet.winSide = 1
+            if (!allowed) return
+            allowed = false
+
+            try {
+              console.info('BetDota2Item component:')
+              console.info('Data ID: ' + this.dataId)
+              if (!this.reverse) {
+                if (e.key === 'ArrowLeft' && !this.teamA.LOCK) {
+                  this.bet.winSide = 1
+                } else if (e.key === 'ArrowRight' && !this.teamB.LOCK) {
+                  this.bet.winSide = 3
+                }
+              } else if (this.reverse) {
+                if (e.key === 'ArrowLeft' && !this.teamB.LOCK) {
+                  this.bet.winSide = 3
+                } else if (e.key === 'ArrowRight' && !this.teamA.LOCK) {
+                  this.bet.winSide = 1
+                }
+              }
+              if (this.bet.winSide === 1) {
+                if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_A.max / 100) / 2
+                if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_A.max / 100) / 2
+                if (e.key === 'q' || e.key === 'й') this.bet.power = this.odds.live.team_A.max / 100
+                if (e.key === 'e' || e.key === 'у') this.bet.power = this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)
+                if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.5
+                if (e.key === '1') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.15
+                if (e.key === '2') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.3
+                if (e.key === '3') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.45
+                if (e.key === '4') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.6
+                if (e.key === '5') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.75
+                if (e.key === '6') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.9
+              } else if (this.bet.winSide === 3) {
+                if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_B.max / 100) / 2
+                if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_B.max / 100) / 2
+                if (e.key === 'q' || e.key === 'й') this.bet.power = this.odds.live.team_B.max / 100
+                if (e.key === 'e' || e.key === 'у') this.bet.power = this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)
+                if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.5
+                if (e.key === '1') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.15
+                if (e.key === '2') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.3
+                if (e.key === '3') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.45
+                if (e.key === '4') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.6
+                if (e.key === '5') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.75
+                if (e.key === '6') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.9
+              }
+
+
+              if (e.key === ' ' || e.key === 'v' || e.key === 'м') {
+                this.func1()
+              }
+              if (e.key === 'x' || e.key === 'ч') {
+                this.hideAndMap()
+              }
+              if (e.key === 'z' || e.key === 'я') {
+                this.reverse = !this.reverse
+              }
+              console.log('WINSIDE: '+ this.bet.winSide)
+
+            } catch (e) {
+              console.error(e)
             }
-          }
-          if (this.bet.winSide === 1) {
-            if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_A.max / 100)/2
-            if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_A.max / 100)/2
-            if (e.key === 'q' || e.key === 'й') this.bet.power =        this.odds.live.team_A.max / 100
-            if (e.key === 'e' || e.key === 'у') this.bet.power = this.listReadyPlayers.length *  (this.odds.live.team_A.max / 100)
-            if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.5
-            if (e.key === '1') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.15
-            if (e.key === '2') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.3
-            if (e.key === '3') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.45
-            if (e.key === '4') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.6
-            if (e.key === '5') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.75
-            if (e.key === '6') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_A.max / 100)) * 0.9
-          } else if (this.bet.winSide === 3) {
-            if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_B.max / 100)/2
-            if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power +(this.odds.live.team_B.max / 100)/2
-            if (e.key === 'q' || e.key === 'й') this.bet.power =        this.odds.live.team_B.max / 100
-            if (e.key === 'e' || e.key === 'у') this.bet.power = this.listReadyPlayers.length *  (this.odds.live.team_B.max / 100)
-            if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.5
-            if (e.key === '1') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.15
-            if (e.key === '2') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.3
-            if (e.key === '3') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.45
-            if (e.key === '4') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.6
-            if (e.key === '5') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.75
-            if (e.key === '6') this.bet.power = (this.listReadyPlayers.length * (this.odds.live.team_B.max / 100)) * 0.9
-          }
 
 
-
-          if (e.key === ' ' || e.key === 'v' || e.key === 'м') {
-            this.func1()
-          }
-          if (e.key === 'x' || e.key === 'ч') {
-            this.hideAndMap()
-          }
-          if (e.key === 'z' || e.key === 'я') {
-            this.reverse = !this.reverse
-          }
+          document.querySelector(`[data-id="${this.dataId.toString()}"]`).addEventListener('keyup', e => {
+            if (document.activeElement.getAttribute('data-id') === this.dataId.toString()) {
+              allowed = true
+            }
+          })
         }
+
       })
+
     },
+
+
 
     created() {
       this.randomClass = this.$chance.string({ length: 10, pool: 'abcdeghreq' })
@@ -1433,10 +1460,17 @@
     },
 
     methods: {
-
+      changeStyle() {
+        if (this.randomClass) {
+          document.querySelector(`.${this.randomClass}`).style.background = '#424242'
+        }
+      },
 
       focus() {
-        document.getElementById(this.index).focus()
+        if (this.index) {
+          document.getElementById(this.index).focus()
+        }
+
       },
 
       steamApiDialogMethod() {
@@ -1446,7 +1480,7 @@
 
       reverseMethod() {
         this.reverse = !this.reverse
-        document.getElementById(this.index).focus()
+
       },
 
 
@@ -1510,6 +1544,7 @@
         }).then(result => {
           this.filteredPlayers = result
         })
+        this.changeStyle()
       },
 
       hideAndMap: function() {
@@ -1771,7 +1806,6 @@
           }, 100)
         }))
 
-        document.getElementById(this.index).focus();
         // this.playSound(sound3)
         this.heroesIcons()
 
@@ -1820,7 +1854,7 @@
   }
 
   .active_team_card {
-    background-color: #883433 !important;
+    background-color: #2f3cfc !important;
   }
 
   .left_icon {
@@ -1949,6 +1983,6 @@
   }
 
   .matchWrap:focus {
-    border: red 4px groove;
+    box-shadow: inset 0px 0px 0px 5px yellow !important;
   }
 </style>

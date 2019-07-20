@@ -107,6 +107,22 @@
             </v-card-actions>
           </v-card>
         </v-flex>
+        <v-divider></v-divider>
+        <v-flex>
+          <v-card>
+            <v-container>
+              <v-layout column>
+                <v-flex class="status_string" style="color: yellowgreen"><v-card-media>READY: {{readyPlayers}}</v-card-media></v-flex>
+                <v-flex class="status_string" style="color: yellow;"><v-card-media>BETTING: {{bettingPlayers}}</v-card-media></v-flex>
+                <v-flex class="status_string" style="color: cornflowerblue"><v-card-media>SYNC: {{syncPlayers}}</v-card-media></v-flex>
+                <v-flex class="status_string" style="color: gainsboro"><v-card-media>CHATTING: {{chattingPLayers}}</v-card-media></v-flex>
+                <v-flex class="status_string" style="color: #f98be7"><v-card-media>MOVING: {{movingPlayers}}</v-card-media></v-flex>
+                <v-flex class="status_string"><v-card-media>AUTHENTICATED: {{authPlayers}}</v-card-media></v-flex>
+                <v-flex class="status_string" style="color: red"><v-card-media>EXIT: {{exitPlayers}}</v-card-media></v-flex>
+              </v-layout>
+            </v-container>
+          </v-card>
+        </v-flex>
 
 
       </v-list>
@@ -114,29 +130,26 @@
     </v-navigation-drawer>
     <v-toolbar fixed app>
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon
-          v-html="miniVariant ? 'chevron_right' : 'chevron_left'"
-        ></v-icon>
-      </v-btn>
-      <v-toolbar-title>MATCHES:</v-toolbar-title>
+      <v-toolbar-title style="font-size: 16px">MATCHES</v-toolbar-title>
       <v-btn-toggle style="margin-left: 1%" v-model="$store.state.matches.mode">
         <v-btn value="now" @click="setMatchMode('now')">NOW</v-btn>
         <v-btn value="next" @click="setMatchMode('next')">NEXT</v-btn>
       </v-btn-toggle>
-      <v-toolbar-title style="margin-left: 3%">STATUS:</v-toolbar-title>
+      <v-btn light small round @click="clearMatchesDOTA2Now">CLEAR</v-btn>
+      <v-toolbar-title style="margin-left: 2%; font-size: 16px">STATUS</v-toolbar-title>
       <v-btn-toggle style="margin-left: 1%" v-model="$store.state.matches.status">
         <v-btn value="live" @click="setMatchStatus('live')">LIVE</v-btn>
-        <v-btn value="all" @click="setMatchStatus('all')">ALL</v-btn>
+        <v-btn value="all"  @click="setMatchStatus('all')">ALL</v-btn>
       </v-btn-toggle>
-      <v-spacer></v-spacer>
-      <v-toolbar-title>PLAYERS:</v-toolbar-title>
-      <v-btn value="sync" @click="playersSyncRequest">SYNC</v-btn>
-      <v-btn value="rand_reload" @click="allPlayersToReady">NOW</v-btn>
-      <v-spacer></v-spacer>
-      <v-toolbar-title style="margin-left: 3%">WATCHER</v-toolbar-title>
-        <v-btn value="dota2" @click="updateWatcher('dota2')">DOTA2</v-btn>
-      <v-btn value="csgo" @click="updateWatcher('csgo')">CSGO</v-btn>
+
+      <v-toolbar-title style="margin-left: 2%; font-size: 16px">PL.SYNC.</v-toolbar-title>
+      <v-btn value="sync" light small round @click="playersSyncRequest('now')">NOW</v-btn>
+      <v-btn value="sync" light small round @click="playersSyncRequest('next')">NEXT</v-btn>
+      <v-btn value="rand_reload" light small round @click="allPlayersToReady">READY</v-btn>
+
+      <v-toolbar-title style="margin-left: 2%; font-size: 16px">WATCHER UPD.</v-toolbar-title>
+        <v-btn value="dota2" light small round @click="updateWatcher('dota2')">DOTA2</v-btn>
+      <v-btn value="csgo" light small round @click="updateWatcher('csgo')">CSGO</v-btn>
 
 
 
@@ -209,21 +222,25 @@
         playerDisconnectAlert: false,
         errorMessage: 'Матчи не найдены. Проверьте Manager и Watcher',
         matchesLoaded: false,
-
         drawer: true,
-        fixed: true,
+
         items: [
           { icon: 'apps', title: 'DOTA2', to: '/dota2' },
           { icon: 'apps', title: 'CSGO', to: '/csgo' },
-          { icon: 'bubble_chart', title: 'Inspire', to: '/matches' },
+          { icon: 'bubble_chart', title: 'VMs', to: '/vms' },
           { icon: 'account_circle', title: 'Players', to: '/players' }
         ],
-        miniVariant: false,
-        title: 'RMBETS'
+
+
       }
     },
 
     methods: {
+      clearMatchesDOTA2Now: function() {
+        this.$store.commit('matchesSyncDOTA2Now', [])
+        this.updateWatcher('dota2')
+      },
+
       playSound(sound) {
         console.log('ADUOO')
         let audio = new Audio(sound)
@@ -232,9 +249,9 @@
         audio.play()
       },
 
-      playersSyncRequest() {
+      playersSyncRequest(data) {
         console.log('players sync request')
-        this.$socket.emit('players_sync_request')
+        this.$socket.emit('players_sync_request', data)
       },
 
 
@@ -259,7 +276,9 @@
           username,
           msg
         })
+        this.chatObj.msg = ''
       },
+
 
       setMatchMode: function(mode) {
         this.$store.commit('setMatchMode', mode)
@@ -276,16 +295,80 @@
     },
 
     mounted(){
-      window.addEventListener('keydown', e => {
-        // console.log(e)
-        // console.log(this.$store.state.matches.DOTA2.now.length)
-      })
+
 
     },
 
     computed: {
+      readyPlayers() {
+        let count = 0
+        this.$store.state.players.forEach(player => {
+          if (player.status === 'ready' || player.status === '2window' || player.status === 'moving') {
+            count++
+          }
+        })
+        return count
+      },
 
+      bettingPlayers() {
+        let count = 0
+        this.$store.state.players.forEach(player => {
+          if (player.status === 'betting') {
+            count++
+          }
+        })
+        return count
+      },
 
+      authPlayers() {
+        let count = 0
+        this.$store.state.players.forEach(player => {
+          if (player.status === 'authenticated' || player.status === 'loadingDOTA2' || player.status === 'loadingCSGO') {
+            count++
+          }
+        })
+        return count
+      },
+
+      syncPlayers() {
+        let count = 0
+        this.$store.state.players.forEach(player => {
+          if (player.status === 'loadingNowBets' || player.status === 'loadingNextBets' || player.status === 'liveStatusUpd') {
+            count++
+          }
+        })
+        return count
+      },
+
+      chattingPLayers() {
+        let count = 0
+        this.$store.state.players.forEach(player => {
+          if (player.status === 'chatting' || player.status === 'chatControl') {
+            count++
+          }
+        })
+        return count
+      },
+
+      movingPlayers() {
+        let count = 0
+        this.$store.state.players.forEach(player => {
+          if (player.status === 'nextMoving') {
+            count++
+          }
+        })
+        return count
+      },
+
+      exitPlayers() {
+        let count = 0
+        this.$store.state.players.forEach(player => {
+          if (player.status === 'exit') {
+            count++
+          }
+        })
+        return count
+      }
     },
     sockets: {
       auth: function() {
@@ -305,26 +388,11 @@
       },
 
       import_matches_dota2_now: function(data) {
-        let tempDataIdsArr = []
-          data.forEach(elem => {
-            tempDataIdsArr.push(elem.STATUS)
-          })
-          console.log('TEMPARR')
-          console.log(tempDataIdsArr)
-          if (JSON.stringify(tempDataIdsArr) !== JSON.stringify(this.dataIdsArr)) {
-            console.log('DATA IDS NOT EQUALS')
-            this.dataIdsArr = []
-            this.dataIdsArr = tempDataIdsArr
-
-            setTimeout(() => {
-              this.newMatchAdded = false
-            }, 7000)
-            this.$socket.emit('data_ids_change')
-          }
 
         this.$store.commit('matchesSyncDOTA2Now', data)
 
       },
+
 
       dota2_live_status_update: function() {
 
@@ -420,3 +488,9 @@
     }
   }
 </script>
+
+<style scoped>
+  .status_string {
+    margin-bottom: 10px;
+  }
+</style>

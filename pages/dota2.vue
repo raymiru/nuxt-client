@@ -5,7 +5,7 @@
         <BetItemDota2
           v-for="(match, index) in $store.state.matches.DOTA2.now"
           :class="{hide: match.STATUS !== $store.state.matches.status && $store.state.matches.status !== 'all'}"
-          :index="index"
+          :index="match.LIVE_INDEX"
           :key="match.DATA_ID"
           :dataId="match.DATA_ID"
           :tournamentLogo="match.TOURNAMENT_LOGO"
@@ -60,89 +60,68 @@
     },
 
     mounted() {
+      let allowed = true
+
       window.addEventListener('keydown', e => {
+
+
+        if (e.repeat !== undefined) {
+          allowed = !e.repeat
+        }
+        if (!allowed) return;
+        allowed = false
+
         const findStartItem = () => {
           console.log('findStartItem');
-          if (!document.getElementById('0').classList.contains('hide')) {
+          if (document.getElementById('0')) {
             document.getElementById('0').focus()
-          } else if (!document.getElementById('1').classList.contains('hide')) {
+          } else if (document.getElementById('1')) {
             document.getElementById('1').focus()
-          } else if (!document.getElementById('2').classList.contains('hide')) {
+          } else if (document.getElementById('2')) {
             document.getElementById('2').focus()
-          } else if (!document.getElementById('3').classList.contains('hide')) {
+          } else if (document.getElementById('3')) {
             document.getElementById('3').focus()
-          } else if (!document.getElementById('4').classList.contains('hide')) {
+          } else if (document.getElementById('4')) {
             document.getElementById('4').focus()
-          }
-        }
-
-        const arrowDown = (z) => {
-          if (document.getElementById(`${z + 1}`).id !== '' && !document.getElementById(`${z + 1}`).classList.contains('hide')) {
-            document.getElementById(`${z + 1}`).focus()
-          } else {
-            console.log('INACHE')
-            arrowUp(z+1)
-          }
-        }
-
-
-        const arrowUp = (z) => {
-          if (document.getElementById(`${z - 1}`).id !== '' && !document.getElementById(`${z - 1}`).classList.contains('hide')) {
-            document.getElementById(`${z - 1}`).focus()
-          } else {
-            console.log('INACHE')
-            arrowUp(z-1)
           }
         }
 
 
         if (e.key === 'ArrowDown') {
+          console.info('Dota2 component:')
+          console.log('Active Element:' + document.activeElement)
+          console.info('Key: ' + e.key)
           if (document.activeElement.id !== '') {
-            let z = 0
             this.matchNowIndex = parseInt(document.activeElement.id)
-            z = this.matchNowIndex + z
-
-            if (document.getElementById(`${z + 1}`).id !== '' && !document.getElementById(`${z + 1}`).classList.contains('hide')) {
-              console.log('F1')
-              document.getElementById(`${z + 1}`).focus()
-            } else if (document.getElementById(`${z + 2}`).id !== '' && !document.getElementById(`${z + 2}`).classList.contains('hide')) {
-              console.log('F2')
-              document.getElementById(`${z  - 2}`).focus()
-            } else if (document.getElementById(`${z + 3}`).id !== '' && !document.getElementById(`${z + 3}`).classList.contains('hide')) {
-              console.log('F3')
-              document.getElementById(`${z  - 3}`).focus()
+            if (document.getElementById(`${this.matchNowIndex + 1}`).id) {
+              document.getElementById(`${this.matchNowIndex + 1}`).focus()
+              this.matchNowIndex = parseInt(document.activeElement.id)
             }
           } else {
             findStartItem()
           }
         } else if (e.key === 'ArrowUp') {
+          console.info('Dota2 component:')
+          console.log('Active Element:' + document.activeElement)
+          console.info('Key: ' + e.key)
           if (document.activeElement.id !== '') {
-            let z = 0
             this.matchNowIndex = parseInt(document.activeElement.id)
-            z = this.matchNowIndex + z
-
-            if (document.getElementById(`${z - 1}`).id !== '' && !document.getElementById(`${z - 1}`).classList.contains('hide')) {
-              document.getElementById(`${z  - 1}`).focus()
-            } else if (document.getElementById(`${z - 2}`).id !== '' && !document.getElementById(`${z - 2}`).classList.contains('hide')) {
-              document.getElementById(`${z  - 2}`).focus()
-            } else if (document.getElementById(`${z - 3}`).id !== '' && !document.getElementById(`${z - 3}`).classList.contains('hide')) {
-              document.getElementById(`${z  - 3}`).focus()
+            if (document.getElementById(`${this.matchNowIndex - 1}`).id) {
+              document.getElementById(`${this.matchNowIndex - 1}`).focus()
+              this.matchNowIndex = parseInt(document.activeElement.id)
             }
           } else {
             findStartItem()
           }
         }
 
-        console.log(e)
-        // if (e.key === 'ArrowUp' && this.matchNowIndex) {
-        //   document.getElementById(this.matchNowIndex-1).focus()
-        //   this.matchNowIndex = document.activeElement.id
-        // } else if (e.key === 'ArrowDown') {
-        //   document.getElementById(this.matchNowIndex+1).focus()
-        //   this.matchNowIndex = document.activeElement.id
-        // }
+
+      })
+      window.addEventListener('keyup', e => {
+        allowed = true
       })
     },
+
 
     methods: {
       rand() {
