@@ -8,15 +8,19 @@
         </v-flex>
         <v-flex md6>
           <v-layout>
-            <v-flex><v-card-text>PLAYER</v-card-text></v-flex>
-            <v-flex><v-card-text>{{chatObj.player}}</v-card-text></v-flex>
+            <v-flex>
+              <v-card-text>PLAYER</v-card-text>
+            </v-flex>
+            <v-flex>
+              <v-card-text>{{chatObj.player}}</v-card-text>
+            </v-flex>
           </v-layout>
         </v-flex>
         <div
           style="border-top: gray 2px groove"
           v-for="(data, index) in $store.state.players"
           :key="index">
-          <v-layout
+          <v-layout v-if="data.status === 'ready' || data.status === 'moving' || data.status === '2window'"
           >
             <v-flex md6>
               <v-card-text>{{data.username}}</v-card-text>
@@ -29,13 +33,49 @@
         </div>
       </v-card>
     </v-dialog>
+    <v-content v-if="auth === false">
+      <v-container id="login" fill-height text-md-center>
+        <v-layout column class=" align-center" style="height: 300px">
 
-    <v-navigation-drawer
-      :mini-variant.sync="miniVariant"
-      :disable-resize-watcher=true
-      v-model="drawer"
-      fixed
-      app
+          <v-flex md6>
+            <v-card-title style="font-size: 18px">AUTHENTICATION</v-card-title>
+          </v-flex>
+          <v-flex style="min-width: 230px">
+            <v-text-field label='USERNAME' v-model="username"></v-text-field>
+          </v-flex>
+          <v-flex style="min-width: 230px">
+            <v-text-field
+              label='PASSWORD'
+              v-model="password"
+              :type="show1 ? 'text' : 'password'"
+              :append-icon="show1 ? 'visibility' : 'visibility_off'"
+              @click:append="show1 = !show1"
+            ></v-text-field>
+          </v-flex>
+          <v-flex>
+            <v-btn @click="login" round>LOGIN</v-btn>
+          </v-flex>
+
+        </v-layout>
+      </v-container>
+    </v-content>
+    <v-content v-if="auth === null">
+      <v-container fill-height text-md-center>
+        <v-layout column class=" align-center" style="height: 300px">
+
+          <v-flex>
+            <v-card-text>NO CONNECTION WITH MANAGER</v-card-text>
+          </v-flex>
+
+        </v-layout>
+      </v-container>
+    </v-content>
+    <v-navigation-drawer v-if="auth"
+
+                         :disable-resize-watcher=true
+                         v-model="drawer"
+                         fixed
+                         app
     >
       <v-list>
         <v-list-tile
@@ -65,22 +105,31 @@
                       <v-toolbar-title>Chat</v-toolbar-title>
                     </v-flex>
                     <v-flex md5>
-                      <v-toolbar-title style="font-size: 15px; margin-top: 5px">{{chatObj.onlineCount}}
+                      <v-toolbar-title v-if="chat==='dota2'" style="font-size: 15px; margin-top: 5px">
+                        {{chatObj.onlineCount.dota2}}
+                      </v-toolbar-title>
+                      <v-toolbar-title v-else-if="chat==='csgo'" style="font-size: 15px; margin-top: 5px">
+                        {{chatObj.onlineCount.csgo}}
                       </v-toolbar-title>
                     </v-flex>
                   </v-layout>
                 </v-flex>
                 <v-flex md6>
-                  <v-btn-toggle v-model="chat">
-                    <v-btn value="dota2">DOTA2</v-btn>
-                    <v-btn value="csgo">CSGO</v-btn>
+                  <v-btn-toggle :value="chat">
+                    <v-btn value="dota2" @click="chooseChat('dota2')">DOTA2</v-btn>
+                    <v-btn value="csgo" @click="chooseChat('csgo')">CSGO</v-btn>
                   </v-btn-toggle>
                 </v-flex>
 
               </v-layout>
             </v-toolbar>
             <v-card-text>
-              <v-list v-if="chat === 'dota2'" ref="chat" style="height: 250px; overflow: auto;">
+              <v-list v-if="chat === 'csgo'" ref="chat" style="height: 250px; overflow: auto;">
+                <template v-for="(item, index) in chatObj.chatLogs.csgo">
+                  <p v-if="item" :key="index">{{ item.username }}: {{item.text}}</p>
+                </template>
+              </v-list>
+              <v-list v-else-if="chat === 'dota2'" ref="chat" style="height: 250px; overflow: auto;">
                 <template v-for="(item, index) in chatObj.chatLogs.dota2">
                   <p v-if="item" :key="index">{{ item.username }}: {{item.text}}</p>
                 </template>
@@ -90,15 +139,15 @@
 
               <v-layout>
                 <v-flex md8>
-                  <v-text-field label="Message" v-model="chatObj.msg"single-line solo-inverted></v-text-field>
+                  <v-text-field label="Message" v-model="chatObj.msg" single-line solo-inverted></v-text-field>
                 </v-flex>
                 <v-flex style="margin-top: 5px; margin-left: 5px" md2>
                   <v-layout>
                     <v-btn fab small @click="playersDialog = !playersDialog">
-                      <v-icon >fingerprint</v-icon>
+                      <v-icon>fingerprint</v-icon>
                     </v-btn>
                     <v-btn fab small @click="sendMsg(chatObj.player, chatObj.msg)">
-                      <v-icon >send</v-icon>
+                      <v-icon>send</v-icon>
                     </v-btn>
                   </v-layout>
                 </v-flex>
@@ -112,13 +161,27 @@
           <v-card>
             <v-container>
               <v-layout column>
-                <v-flex class="status_string" style="color: yellowgreen"><v-card-media>READY: {{readyPlayers}}</v-card-media></v-flex>
-                <v-flex class="status_string" style="color: yellow;"><v-card-media>BETTING: {{bettingPlayers}}</v-card-media></v-flex>
-                <v-flex class="status_string" style="color: cornflowerblue"><v-card-media>SYNC: {{syncPlayers}}</v-card-media></v-flex>
-                <v-flex class="status_string" style="color: gainsboro"><v-card-media>CHATTING: {{chattingPLayers}}</v-card-media></v-flex>
-                <v-flex class="status_string" style="color: #f98be7"><v-card-media>MOVING: {{movingPlayers}}</v-card-media></v-flex>
-                <v-flex class="status_string"><v-card-media>AUTHENTICATED: {{authPlayers}}</v-card-media></v-flex>
-                <v-flex class="status_string" style="color: red"><v-card-media>EXIT: {{exitPlayers}}</v-card-media></v-flex>
+                <v-flex class="status_string" style="color: yellowgreen">
+                  <v-card-media>READY: {{readyPlayers}}</v-card-media>
+                </v-flex>
+                <v-flex class="status_string" style="color: yellow;">
+                  <v-card-media>BETTING: {{bettingPlayers}}</v-card-media>
+                </v-flex>
+                <v-flex class="status_string" style="color: cornflowerblue">
+                  <v-card-media>SYNC: {{syncPlayers}}</v-card-media>
+                </v-flex>
+                <v-flex class="status_string" style="color: gainsboro">
+                  <v-card-media>CHATTING: {{chattingPLayers}}</v-card-media>
+                </v-flex>
+                <v-flex class="status_string" style="color: #f98be7">
+                  <v-card-media>MOVING: {{movingPlayers}}</v-card-media>
+                </v-flex>
+                <v-flex class="status_string">
+                  <v-card-media>AUTHENTICATED: {{authPlayers}}</v-card-media>
+                </v-flex>
+                <v-flex class="status_string" style="color: red">
+                  <v-card-media>EXIT: {{exitPlayers}}</v-card-media>
+                </v-flex>
               </v-layout>
             </v-container>
           </v-card>
@@ -128,29 +191,30 @@
       </v-list>
 
     </v-navigation-drawer>
-    <v-toolbar fixed app>
+    <v-toolbar v-if="auth" fixed app>
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title style="font-size: 16px">MATCHES</v-toolbar-title>
-      <v-btn-toggle style="margin-left: 1%" v-model="$store.state.matches.mode">
+      <v-btn-toggle style="margin-left: 1%" :value="$store.state.matches.mode">
         <v-btn value="now" @click="setMatchMode('now')">NOW</v-btn>
         <v-btn value="next" @click="setMatchMode('next')">NEXT</v-btn>
       </v-btn-toggle>
       <v-btn light small round @click="clearMatchesDOTA2Now">CLEAR</v-btn>
       <v-toolbar-title style="margin-left: 2%; font-size: 16px">STATUS</v-toolbar-title>
-      <v-btn-toggle style="margin-left: 1%" v-model="$store.state.matches.status">
+      <v-btn-toggle style="margin-left: 1%" :value="$store.state.matches.status">
         <v-btn value="live" @click="setMatchStatus('live')">LIVE</v-btn>
-        <v-btn value="all"  @click="setMatchStatus('all')">ALL</v-btn>
+        <v-btn value="all" @click="setMatchStatus('all')">ALL</v-btn>
       </v-btn-toggle>
 
-      <v-toolbar-title style="margin-left: 2%; font-size: 16px">PL.SYNC.</v-toolbar-title>
+      <v-toolbar-title style="margin-left: 2%; font-size: 16px">SYNC</v-toolbar-title>
+      <v-btn value="sync" light small round @click="playersSyncRequest('time')">TIME</v-btn>
       <v-btn value="sync" light small round @click="playersSyncRequest('now')">NOW</v-btn>
       <v-btn value="sync" light small round @click="playersSyncRequest('next')">NEXT</v-btn>
       <v-btn value="rand_reload" light small round @click="allPlayersToReady">READY</v-btn>
 
-      <v-toolbar-title style="margin-left: 2%; font-size: 16px">WATCHER UPD.</v-toolbar-title>
-        <v-btn value="dota2" light small round @click="updateWatcher('dota2')">DOTA2</v-btn>
+      <v-toolbar-title style="margin-left: 2%; font-size: 16px">WTCHR</v-toolbar-title>
+      <v-btn value="dota2" light small round @click="updateWatcher('dota2')">DOTA2</v-btn>
       <v-btn value="csgo" light small round @click="updateWatcher('csgo')">CSGO</v-btn>
-
+      <v-toolbar-title @click="globalLog" style="margin-left: 7%">{{getUsername().toUpperCase()}}</v-toolbar-title>
 
 
       <v-alert @click="playerConnectAlert = !playerConnectAlert" text-md-center style="width: 1000px"
@@ -182,8 +246,8 @@
       >Добавлен новый LIVE матч!
       </v-alert>
     </v-toolbar>
-    <v-content>
-      <v-container-fluid>
+    <v-content class="page_wrapper" v-if="auth">
+      <v-container-fluid class="page_wrapper">
         <nuxt keep-alive></nuxt>
       </v-container-fluid>
     </v-content>
@@ -202,6 +266,11 @@
     matchIndex: 0,
     data() {
       return {
+        auth: undefined,
+        username: '',
+        password: '',
+        show1: false,
+        game: null,
         newMatchAdded: false,
         playersDialog: false,
         chat: 'dota2',
@@ -209,7 +278,10 @@
           msg: null,
           player: null,
           chatLogs: [],
-          onlineCount: 0
+          onlineCount: {
+            dota2: 0,
+            csgo: 0
+          }
         },
         dataIdsArr: [],
         logs: [1, 2, 3, 4, 'dasdas', 'dasdasd', 'dasdqweqweqsdas dasdasdsada sdasdas das123123123 12123', 312312],
@@ -229,13 +301,34 @@
           { icon: 'apps', title: 'CSGO', to: '/csgo' },
           { icon: 'bubble_chart', title: 'VMs', to: '/vms' },
           { icon: 'account_circle', title: 'Players', to: '/players' }
-        ],
+        ]
 
 
       }
     },
 
     methods: {
+      globalLog() {
+        this.$socket.emit('global_log')
+      },
+
+
+      getUsername() {
+        return localStorage['username']
+      },
+
+      login() {
+        this.$socket.emit('auth', {
+          type: 'admin',
+          username: this.username,
+          password: this.password
+        })
+      },
+
+      chooseChat(data) {
+        this.chat = data
+      },
+
       clearMatchesDOTA2Now: function() {
         this.$store.commit('matchesSyncDOTA2Now', [])
         this.updateWatcher('dota2')
@@ -251,7 +344,10 @@
 
       playersSyncRequest(data) {
         console.log('players sync request')
-        this.$socket.emit('players_sync_request', data)
+        this.$socket.emit('players_sync_request', {
+          game: this.game,
+          type: data
+        })
       },
 
 
@@ -267,12 +363,13 @@
       },
 
 
-      sendMsg (username, msg) {
+      sendMsg(username, msg) {
         console.log({
           username,
           msg
         })
         this.$socket.emit('chat_msg', {
+          chat: this.chat,
           username,
           msg
         })
@@ -289,17 +386,39 @@
       },
 
       allPlayersToReady: function() {
-        this.$socket.emit('all_players_to_ready');
+        this.$socket.emit('all_players_to_ready')
       }
 
     },
 
-    mounted(){
+    mounted() {
+      window.addEventListener('keydown', e => {
+
+        if (e.key === 'Shift') {
+          this.allPlayersToReady()
+        }
+      })
+
+      if (!this.game) this.game = this.$router.history.current.name
+
+      this.$router.afterEach((to, from) => {
+        if (to.name === 'dota2') {
+          this.game = 'dota2'
+        } else if (to.name === 'csgo') {
+          this.game = 'csgo'
+        }
+      })
 
 
+      setTimeout(() => {
+        if (this.auth === undefined) {
+          this.auth = null
+        }
+      }, 2000)
     },
 
     computed: {
+
       readyPlayers() {
         let count = 0
         this.$store.state.players.forEach(player => {
@@ -371,20 +490,33 @@
       }
     },
     sockets: {
-      auth: function() {
+      auth: function(data) {
+        if (data.success) {
+          this.auth = true
+          localStorage['username'] = data.username
+        } else {
+          this.auth = false
+          setTimeout(() => {
+            document.querySelector('#login').addEventListener('keydown', e => {
+              if (e.key === 'Enter') {
+                this.login()
+              }
+            })
+          }, 0)
+        }
         this.$store.commit('errorMessageThrow', 'Матчи не найдены. Проверьте Manager и Watcher')
       },
 
       import_chat_dota2(data) {
         console.log(data)
         this.chatObj.chatLogs.dota2 = data.msgArray
-        this.chatObj.onlineCount = data.onlineCount
+        this.chatObj.onlineCount.dota2 = data.onlineCount
       },
 
       import_chat_csgo(data) {
         console.log(data)
         this.chatObj.chatLogs.csgo = data.msgArray
-        this.chatObj.onlineCount = data.onlineCount
+        this.chatObj.onlineCount.csgo = data.onlineCount
       },
 
       import_matches_dota2_now: function(data) {
@@ -427,12 +559,21 @@
         if (data) this.$store.commit('playersSync', data)
       },
 
+      players_bets_sync: function(data) {
+        if (data) this.$store.commit('playersBetsSync', data)
+      },
+
       connect: function() {
         this.$store.commit('errorMessageThrow', 'Loading')
         this.$socket.emit('auth', {
           type: 'admin',
-          username: 'admin'
+          username: localStorage['username'],
+          hash: localStorage['hash']
         })
+      },
+
+      hash: function(hash) {
+        localStorage['hash'] = hash
       },
 
       disconnect: function() {

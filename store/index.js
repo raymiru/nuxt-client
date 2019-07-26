@@ -22,7 +22,9 @@ const store = () =>
         }
       },
       steamApiData: [],
-      players: []
+      players: [],
+      playersBets: {},
+      listReadyToBetPlayers: {}
     },
     mutations: {
       errorMessageThrow(state, payload) {
@@ -56,8 +58,30 @@ const store = () =>
       steamApiDataSync(state, payload) {
         state.steamApiData = payload
       },
+
+      playersBetsSync(state, payload) {
+        state.playersBets = payload
+      },
+
       playersSync(state, payload) {
         state.players = payload
+        // state.matches.DOTA2.now.forEach(match => {
+        //   if (match.STATUS === 'live') {
+        //     state.listReadyToBetPlayers[match.DATA_ID] = []
+        //     state.players.forEach(player => {
+        //       if ((player.status === 'ready' || player.status === 'moving' || player.status === '2window') && player.now_bets[match.DATA_ID][match.STATUS_BUILDER].STATUS === 'ready') {
+        //         state.listReadyToBetPlayers[match.DATA_ID].push(player.username)
+        //       }
+        //     })
+        //   }
+        // })
+        // payload.forEach(player => {
+        //   if (player.now_bets) {
+        //     state.listReadyToBetPlayers.push(player.now_bets)
+        //   }
+        // })
+
+        // listReadyToBetPlayers
       },
       playersMatchSync(state, payload) {
         state.players[payload.index].match = payload.dataId

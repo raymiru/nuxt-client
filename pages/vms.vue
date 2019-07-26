@@ -8,6 +8,7 @@
           :items="VMs"
           :footer="VMs"
           class="elevation-1"
+          :rows-per-page-items="[20, 30, 50, 100]"
         >
           <template v-slot:items="props"
           >
@@ -26,12 +27,6 @@
             <td v-else-if="props.item.status === 'RUNNING'">
               <v-btn v-on:click="stop(props.item.id)">Stop</v-btn>
             </td>
-            <td>{{ props.item.playerStatus }}</td>
-
-
-
-
-
           </template>
         </v-data-table>
       </v-flex>
@@ -54,7 +49,6 @@
           { text: 'IP', value: 'IP'},
           { text: 'STATUS', value: 'status' },
           { text: 'CONTROL', value: '' },
-          { text: 'PLAYER STATUS', value: ''}
         ],
 
         VMs: []
@@ -94,17 +88,17 @@
         this.$axios.$get('https://www.rmbets.site/api/vms')
 
           .then(response => {
-            console.log('THEN')
+            this.VMs = response
 
-              response.forEach((vm, index, array) => {
-                this.$store.state.players.forEach(player => {
-                  if (player.username === vm.name) {
-                    array[index]['playerStatus'] = player.status
-                  }
-                })
-                this.VMs = response
-
-            })
+            //   response.forEach((vm, index, array) => {
+            //     this.$store.state.players.forEach(player => {
+            //       if (player.username === vm.name) {
+            //         array[index]['playerStatus'] = player.status
+            //       }
+            //     })
+            //     this.VMs = response
+            //
+            // })
           })
       }
 

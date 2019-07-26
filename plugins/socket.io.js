@@ -8,7 +8,7 @@ export default ({ store }) => {
     io('https://www.rmbets.site', {
       transports: ['websocket'],
       query: {
-        im: 'admin'
+        im: 'admin',
       }
     }),
     { store }

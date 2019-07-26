@@ -14,14 +14,15 @@
     </v-layout>
     <v-layout>
       <v-flex>
-        <v-data-table :headers="headers" :items="$store.state.players">
+        <v-data-table :headers="headers" :items="$store.state.players" :rows-per-page-items="[20, 30, 50, 100]">
           <template class="playerItem" v-slot:items="props">
             <td class="td">{{props.item.username}}</td>
+            <td class="td">{{props.item.space}}</td>
             <td class="td">{{props.item.bank}}</td>
-            <td class="td">{{props.item.auth_time}}</td>
+            <td class="td">{{props.item.auth_time}} {{props.item.info.location}}</td>
             <td class="td">{{props.item.info.screen.width}} x {{props.item.info.screen.height}}</td>
             <td class="td">{{props.item.info.os}} / {{props.item.info.browser}}</td>
-            <td class="td">{{props.item.info.location}}</td>
+
 
             <td class="td">
               <v-btn-toggle :class="{disable_events: props.item.status !== 'ready'}" :value="props.item.chat_status">
@@ -61,7 +62,7 @@
     name: 'Players',
     data() {
       return {
-        headers: [{ text: 'USER' }, { text: 'BANK' }, { text: 'AUTH TIME' }, { text: 'SCREEN' }, { text: 'OS/BROWSER' }, { text: 'LOCATION' }, { text: 'CHAT CONTROL' }, { text: 'SET GAME' }, { text: 'STATUS' }, { text: 'STATUS CONTROL' }]
+        headers: [{ text: 'USER', value: 'username' }, { text: 'VM', value: 'space'}, { text: 'BANK' , value: 'bank' }, { text: 'AUTH TIME', value: 'auth_time' }, { text: 'SCREEN', value: 'info.screen' }, { text: 'OS/BROWSER' },  { text: 'CHAT CONTROL' }, { text: 'SET GAME' }, { text: 'STATUS', value: 'status' }, { text: 'STATUS CONTROL' }]
       }
     },
     methods: {
