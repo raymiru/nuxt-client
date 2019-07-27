@@ -49,7 +49,11 @@
                 <v-btn fab @click="setStatus('exit', props.item.username)" value="exit">EXIT</v-btn>
               </v-btn-toggle>
             </td>
-
+          </template>
+          <template v-slot:footer>
+            <td></td>
+            <td></td>
+            <td>{{totalBank}}</td>
           </template>
         </v-data-table>
       </v-flex>
@@ -65,6 +69,20 @@
         headers: [{ text: 'USER', value: 'username' }, { text: 'VM', value: 'space'}, { text: 'BANK' , value: 'bank' }, { text: 'AUTH TIME', value: 'auth_time' }, { text: 'SCREEN', value: 'info.screen' }, { text: 'OS/BROWSER' },  { text: 'CHAT CONTROL' }, { text: 'SET GAME' }, { text: 'STATUS', value: 'status' }, { text: 'STATUS CONTROL' }]
       }
     },
+
+    computed: {
+      totalBank() {
+
+        let total = 0
+
+        this.$store.state.players.forEach(player => {
+          total+= parseFloat(player.bank)
+        })
+
+        return total.toFixed(2)
+      },
+    },
+
     methods: {
       chatControl(type, username) {
         console.log({

@@ -182,6 +182,10 @@
                 <v-flex class="status_string" style="color: red">
                   <v-card-media>EXIT: {{exitPlayers}}</v-card-media>
                 </v-flex>
+                <v-flex>
+                  <v-btn value="sync"  small round @click="forceReload('dota2')">D2</v-btn>
+                  <v-btn value="sync"  small round @click="forceReload('csgo')">GO</v-btn>
+                </v-flex>
               </v-layout>
             </v-container>
           </v-card>
@@ -193,28 +197,29 @@
     </v-navigation-drawer>
     <v-toolbar v-if="auth" fixed app>
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title style="font-size: 16px">MATCHES</v-toolbar-title>
+      <v-toolbar-title style="font-size: 14px">MATCHES</v-toolbar-title>
       <v-btn-toggle style="margin-left: 1%" :value="$store.state.matches.mode">
         <v-btn value="now" @click="setMatchMode('now')">NOW</v-btn>
         <v-btn value="next" @click="setMatchMode('next')">NEXT</v-btn>
       </v-btn-toggle>
       <v-btn light small round @click="clearMatchesDOTA2Now">CLEAR</v-btn>
-      <v-toolbar-title style="margin-left: 2%; font-size: 16px">STATUS</v-toolbar-title>
+      <v-toolbar-title style="margin-left: 1%; font-size: 14px">STATUS</v-toolbar-title>
       <v-btn-toggle style="margin-left: 1%" :value="$store.state.matches.status">
         <v-btn value="live" @click="setMatchStatus('live')">LIVE</v-btn>
         <v-btn value="all" @click="setMatchStatus('all')">ALL</v-btn>
       </v-btn-toggle>
 
-      <v-toolbar-title style="margin-left: 2%; font-size: 16px">SYNC</v-toolbar-title>
+      <v-toolbar-title style="margin-left: 1%; font-size: 14px">SYNC</v-toolbar-title>
+
       <v-btn value="sync" light small round @click="playersSyncRequest('time')">TIME</v-btn>
       <v-btn value="sync" light small round @click="playersSyncRequest('now')">NOW</v-btn>
       <v-btn value="sync" light small round @click="playersSyncRequest('next')">NEXT</v-btn>
       <v-btn value="rand_reload" light small round @click="allPlayersToReady">READY</v-btn>
 
-      <v-toolbar-title style="margin-left: 2%; font-size: 16px">WTCHR</v-toolbar-title>
+      <v-toolbar-title style="margin-left: 1%; font-size: 14px">WATCHER</v-toolbar-title>
       <v-btn value="dota2" light small round @click="updateWatcher('dota2')">DOTA2</v-btn>
       <v-btn value="csgo" light small round @click="updateWatcher('csgo')">CSGO</v-btn>
-      <v-toolbar-title @click="globalLog" style="margin-left: 7%">{{getUsername().toUpperCase()}}</v-toolbar-title>
+      <v-toolbar-title @click="globalLog" style="margin-left: 5%">{{getUsername().toUpperCase()}}</v-toolbar-title>
 
 
       <v-alert @click="playerConnectAlert = !playerConnectAlert" text-md-center style="width: 1000px"
@@ -308,6 +313,13 @@
     },
 
     methods: {
+      forceReload(game) {
+        this.$socket.emit('force_reload', {
+          game
+        })
+      },
+
+
       globalLog() {
         this.$socket.emit('global_log')
       },

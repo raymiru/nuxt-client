@@ -1453,8 +1453,8 @@
                   }
                 }
                 if (this.bet.winSide === 1) {
-                  if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_A.max / 100) / 2
-                  if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_A.max / 100) / 2
+                  if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_A.max / 100)
+                  if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_A.max / 100)
                   if (e.key === 'q' || e.key === 'й') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.33
                   if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.5
                   if (e.key === 'e' || e.key === 'у') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.66
@@ -1466,8 +1466,8 @@
                   if (e.key === '5') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.75
                   if (e.key === '6') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.9
                 } else if (this.bet.winSide === 3) {
-                  if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_B.max / 100) / 2
-                  if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_B.max / 100) / 2
+                  if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_B.max / 100)
+                  if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_B.max / 100)
                   if (e.key === 'q' || e.key === 'й') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.33
                   if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.5
                   if (e.key === 'e' || e.key === 'у') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.66
