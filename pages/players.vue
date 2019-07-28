@@ -79,7 +79,7 @@
           total+= parseFloat(player.bank)
         })
 
-        return total.toFixed(2)
+        return (total * 0.945).toFixed(2)
       },
     },
 

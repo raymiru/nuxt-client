@@ -353,7 +353,7 @@
           <v-flex md2 v-if="!reverse">
             <v-layout class="justify-space-between text-md-center">
               <v-flex md6 class="team_card" :class="{disable_events: teamA.LOCK || status !=='live'}">
-                <v-layout column fill-height :class="{active_team_card: bet.winSide === 1}" @click="chooseWinner(1)">
+                <v-layout column fill-height :class="{active_team_card: winSide === 1}" @click="chooseWinner(1)">
                   <v-flex pa-2>
                     {{ teamA.NAME }}
                   </v-flex>
@@ -412,7 +412,7 @@
           <v-flex md2 v-else-if="reverse">
             <v-layout>
               <v-flex md6 class="team_card" :class="{disable_events: teamB.LOCK || status !=='live'}">
-                <v-layout column fill-height :class="{active_team_card: bet.winSide === 3}" @click="chooseWinner(3)">
+                <v-layout column fill-height :class="{active_team_card: winSide === 3}" @click="chooseWinner(3)">
                   <v-flex pa-2>
                     {{ teamB.NAME }}
                   </v-flex>
@@ -474,20 +474,20 @@
               <v-flex class="pa-2">
                 <v-layout>
                   <v-flex md2 style="margin-left: 15px; margin-right: 15px; margin-top: 5px">
-                    <div>{{bet.power}}</div>
+                    <div>{{betPower}}</div>
                     <div style="color: yellow;">{{pWinNow}}</div>
                   </v-flex>
 
                   <v-flex md10 style="margin-top: 5px" >
-                    <v-slider  @click="focus" tabindex="-1" height="10px" v-if="bet.winSide === 1"
-                              v-model="bet.power"
+                    <v-slider  @click="focus" tabindex="-1" height="10px" v-if="winSide === 1"
+                              v-model="betPower"
                               :max="$store.state.playersBets[dataId].list.length * (odds.live.team_A.max / 100)"
                               :min="0"
                               :step="5"
                     >
                     </v-slider>
-                    <v-slider @click="focus" tabindex="-1" height="10px" v-else-if="bet.winSide === 3"
-                              v-model="bet.power"
+                    <v-slider @click="focus" tabindex="-1" height="10px" v-else-if="winSide === 3"
+                              v-model="betPower"
                               :max="$store.state.playersBets[dataId].list.length * (odds.live.team_B.max / 100)"
                               :min="0"
                               :step="5"
@@ -503,9 +503,9 @@
                     {{($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet).toFixed(2)}}
                   </v-flex>
                   <v-flex md8 :class="{emptyAP: !$store.state.playersBets[dataId].list.length}"
-                          style="margin-right: 25px; color: yellow">AP: {{$store.state.playersBets[dataId].list.length}}
+                          style="margin-right: 25px; color: yellow">AP: {{$store.state.playersBets[dataId].list.length}} / {{$store.state.players.length}}
                   </v-flex>
-                  <!--<v-flex md3 style="color: yellow">BP: {{bet.power}}</v-flex>-->
+                  <!--<v-flex md3 style="color: yellow">BP: {{betPower}}</v-flex>-->
 
                   <v-flex md2
                           :class="{TP_Plus: ($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet) > 0, TP_Minus: ($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet) < 0 }">
@@ -519,8 +519,7 @@
                   </v-flex>
 
                   <v-flex md8 :class="{emptyAP: !$store.state.playersBets[dataId].list.length}"
-                          style="margin-right: 25px; color:yellow">AP: {{$store.state.playersBets[dataId].list.length}}
-                  </v-flex>
+                          style="margin-right: 25px; color:yellow">AP: {{$store.state.playersBets[dataId].list.length}} / {{$store.state.players.length}}</v-flex>
 
                   <v-flex md2
                           :class="{TP_Plus: ($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet) > 0, TP_Minus: ($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet) < 0 }">
@@ -593,7 +592,7 @@
                 </v-layout>
               </v-flex>
               <v-flex md6 class="team_card" :class="{disable_events: teamB.LOCK || status !=='live'}">
-                <v-layout column fill-height :class="{active_team_card: bet.winSide === 3}" @click="chooseWinner(3)">
+                <v-layout column fill-height :class="{active_team_card: winSide === 3}" @click="chooseWinner(3)">
                   <v-flex pa-2>
                     {{ teamB.NAME }}
                   </v-flex>
@@ -652,7 +651,7 @@
                 </v-layout>
               </v-flex>
               <v-flex md6 class="team_card" :class="{disable_events: teamA.LOCK || status !=='live'}">
-                <v-layout column fill-height :class="{active_team_card: bet.winSide === 1}" @click="chooseWinner(1)">
+                <v-layout column fill-height :class="{active_team_card: winSide === 1}" @click="chooseWinner(1)">
                   <v-flex pa-2>
                     {{ teamA.NAME }}
                   </v-flex>
@@ -1065,12 +1064,12 @@
         steamApiDialog: false,
         playersDialog: false,
         steamApiMatch: 0,
+        betPower: 0,
+        winSide: 0,
         bet: {
           left: {},
           right: {},
-          power: 0,
           type: 'full',
-          winSide: false,
           playersInGame: {
             active: 0,
             inactive: 0
@@ -1096,7 +1095,6 @@
             t4: '11'
           }
         },
-        testData: 0,
         radiant_win: null,
         team_radiant_kills: 0,
         team_dire_kills: 0,
@@ -1143,24 +1141,40 @@
     },
 
     computed: {
+      leftTotalBet() {
+        return this.$store.state.playersBets[this.dataId].leftTotalBet
+      },
+
+      rightTotalBet() {
+        return this.$store.state.playersBets[this.dataId].rightTotalBet()
+      },
+
+      leftTotalPWin() {
+        return this.$store.state.playersBets[this.dataId].leftTotalPWin
+      },
+
+      rightTotalPWin() {
+        return this.$store.state.playersBets[this.dataId].rightTotalBet
+      },
+
       dataIdWhenLive() {
         if (this.status === 'live') {
           return this.dataId
         }
       },
+
       idWhenLive() {
         if (this.status === 'live') {
           return this.index
         }
       },
 
-
       pWinNow() {
         let result = 0
-        if (this.bet.winSide === 1) {
-          result = (this.bet.power * (this.odds.live.team_A.odd / 100)) - this.bet.power
-        } else if (this.bet.winSide === 3) {
-          result = (this.bet.power * (this.odds.live.team_B.odd / 100)) - this.bet.power
+        if (this.winSide === 1) {
+          result = (this.betPower * (this.odds.live.team_A.odd / 100)) - this.betPower
+        } else if (this.winSide === 3) {
+          result = (this.betPower * (this.odds.live.team_B.odd / 100)) - this.betPower
         }
         return result.toFixed(1)
       },
@@ -1168,91 +1182,11 @@
       checkReverse() {
         return this.reverse
       },
-      //
-      // leftPWinProfit() {
-      //   let totalProfit = 0
-      //
-      //   this.$store.state.players.forEach(player => {
-      //     if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
-      //       totalProfit = parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_PWIN) - parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_BET)
-      //     }
-      //   })
-      //   return totalProfit
-      // },
-      //
-      // rightPWinProfit() {
-      //   let totalProfit = 0
-      //
-      //
-      //   this.$store.state.players.forEach(player => {
-      //     if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
-      //       totalProfit = parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_PWIN) - parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_BET)
-      //     }
-      //   })
-      //   return totalProfit
-      // },
-
-      // listReadyPlayers() {
-      //   let readyPlayers = []
-      //   this.$store.state.players.forEach(player => {
-      //     if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
-      //       if ((player.status === 'ready' || player.status === 'moving' || player.status === '2window') && player.now_bets[this.dataId][this.statusBuilder].STATUS === 'ready') {
-      //         readyPlayers.push(player.username)
-      //       }
-      //
-      //     }
-      //   })
-      //   return readyPlayers
-      // },
-
-
-      // leftTotalBet() {
-      //   let totalBet = 0
-      //
-      //
-      //   this.$store.state.players.forEach(player => {
-      //     if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
-      //       totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_BET)
-      //     }
-      //   })
-      //   return totalBet
-      // },
-      //
-      // rightTotalBet() {
-      //   let totalBet = 0
-      //   this.$store.state.players.forEach(player => {
-      //     if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
-      //       totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_BET)
-      //     }
-      //   })
-      //   return totalBet
-      // },
-      //
-      // leftTotalPWin() {
-      //   let totalBet = 0
-      //
-      //
-      //   this.$store.state.players.forEach(player => {
-      //     if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
-      //       totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].LEFT_BET.TOTAL_PWIN)
-      //     }
-      //   })
-      //   return totalBet
-      // },
-      //
-      // rightTotalPWin() {
-      //   let totalBet = 0
-      //   this.$store.state.players.forEach(player => {
-      //     if (player.now_bets && player.now_bets[this.dataId] && player.now_bets[this.dataId][this.statusBuilder]) {
-      //       totalBet += parseFloat(player.now_bets[this.dataId][this.statusBuilder].RIGHT_BET.TOTAL_PWIN)
-      //     }
-      //   })
-      //   return totalBet
-      // },
 
       isLive: function() {
         return this.status === 'live'
       },
+
       matchIndex: function() {
         let steamIndex = null
         this.$store.state.steamApiData.forEach((data, index) => {
@@ -1273,8 +1207,8 @@
         console.log('WATCH')
         console.log(newVal)
         if (newVal) {
-          if (this.bet.winSide === 1) {
-            this.bet.winSide = null
+          if (this.winSide === 1) {
+            this.winSide = null
           }
         }
       },
@@ -1282,8 +1216,8 @@
         console.log('WATCH')
         console.log(newVal)
         if (newVal) {
-          if (this.bet.winSide === 3) {
-            this.bet.winSide = null
+          if (this.winSide === 3) {
+            this.winSide = null
           }
         }
       },
@@ -1441,43 +1375,43 @@
                 console.log('Data ID: ' + this.dataId)
                 if (!this.reverse) {
                   if (e.key === 'ArrowLeft' && !this.teamA.LOCK) {
-                    this.bet.winSide = 1
+                    this.winSide = 1
                   } else if (e.key === 'ArrowRight' && !this.teamB.LOCK) {
-                    this.bet.winSide = 3
+                    this.winSide = 3
                   }
                 } else if (this.reverse) {
                   if (e.key === 'ArrowLeft' && !this.teamB.LOCK) {
-                    this.bet.winSide = 3
+                    this.winSide = 3
                   } else if (e.key === 'ArrowRight' && !this.teamA.LOCK) {
-                    this.bet.winSide = 1
+                    this.winSide = 1
                   }
                 }
-                if (this.bet.winSide === 1) {
-                  if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_A.max / 100)
-                  if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_A.max / 100)
-                  if (e.key === 'q' || e.key === 'й') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.33
-                  if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.5
-                  if (e.key === 'e' || e.key === 'у') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.66
-                  if (e.key === 'r' || e.key === 'к') this.bet.power = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)
-                  if (e.key === '1') this.bet.power = this.odds.live.team_A.max / 100
-                  if (e.key === '2') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.3
-                  if (e.key === '3') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.45
-                  if (e.key === '4') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.6
-                  if (e.key === '5') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.75
-                  if (e.key === '6') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.9
-                } else if (this.bet.winSide === 3) {
-                  if (e.key === 'a' || e.key === 'ф') this.bet.power = this.bet.power - (this.odds.live.team_B.max / 100)
-                  if (e.key === 'd' || e.key === 'в') this.bet.power = this.bet.power + (this.odds.live.team_B.max / 100)
-                  if (e.key === 'q' || e.key === 'й') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.33
-                  if (e.key === 'w' || e.key === 'ц') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.5
-                  if (e.key === 'e' || e.key === 'у') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.66
-                  if (e.key === 'r' || e.key === 'к') this.bet.power = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)
-                  if (e.key === '1') this.bet.power = this.odds.live.team_B.max / 100
-                  if (e.key === '2') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.3
-                  if (e.key === '3') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.45
-                  if (e.key === '4') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.6
-                  if (e.key === '5') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.75
-                  if (e.key === '6') this.bet.power = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.9
+                if (this.winSide === 1) {
+                  if (e.key === 'a' || e.key === 'ф') this.betPower = this.betPower - (this.odds.live.team_A.max / 100)
+                  if (e.key === 'd' || e.key === 'в') this.betPower = this.betPower + (this.odds.live.team_A.max / 100)
+                  if (e.key === 'q' || e.key === 'й') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.33
+                  if (e.key === 'w' || e.key === 'ц') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.5
+                  if (e.key === 'e' || e.key === 'у') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.66
+                  if (e.key === 'r' || e.key === 'к') this.betPower = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)
+                  if (e.key === '1') this.betPower = this.odds.live.team_A.max / 100
+                  if (e.key === '2') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.3
+                  if (e.key === '3') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.45
+                  if (e.key === '4') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.6
+                  if (e.key === '5') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.75
+                  if (e.key === '6') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.9
+                } else if (this.winSide === 3) {
+                  if (e.key === 'a' || e.key === 'ф') this.betPower = this.betPower - (this.odds.live.team_B.max / 100)
+                  if (e.key === 'd' || e.key === 'в') this.betPower = this.betPower + (this.odds.live.team_B.max / 100)
+                  if (e.key === 'q' || e.key === 'й') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.33
+                  if (e.key === 'w' || e.key === 'ц') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.5
+                  if (e.key === 'e' || e.key === 'у') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.66
+                  if (e.key === 'r' || e.key === 'к') this.betPower = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)
+                  if (e.key === '1') this.betPower = this.odds.live.team_B.max / 100
+                  if (e.key === '2') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.3
+                  if (e.key === '3') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.45
+                  if (e.key === '4') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.6
+                  if (e.key === '5') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.75
+                  if (e.key === '6') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.9
                 }
 
 
@@ -1576,7 +1510,7 @@
         console.log(this.dataId)
         this.$socket.emit('place_bet', {
           dataId: this.dataId,
-          winSide: this.bet.winSide
+          winSide: this.winSide
         })
       },
 
@@ -1730,22 +1664,22 @@
 
         let maxBet = 0
 
-        if (this.bet.winSide === 1) {
+        if (this.winSide === 1) {
           maxBet = this.odds.live.team_A.max / 100
-        } else if (this.bet.winSide === 3) {
+        } else if (this.winSide === 3) {
           maxBet = this.odds.live.team_B.max / 100
         }
 
 
 
-        if (this.$store.state.playersBets[this.dataId].list.length !== 0 && maxBet !== 0 && this.bet.power !== 0 && this.bet.winSide !== 0) {
+        if (this.$store.state.playersBets[this.dataId].list.length !== 0 && maxBet !== 0 && this.betPower !== 0 && this.winSide !== 0) {
           console.log('multiBet')
-          let multiBetArr = multiBet(this.$store.state.playersBets[this.dataId].list, maxBet, this.bet.power, this.bet.type)
+          let multiBetArr = multiBet(this.$store.state.playersBets[this.dataId].list, maxBet, this.betPower, this.bet.type)
           this.$socket.emit('multi_bet_dota2', {
             dataId: this.dataId,
             statusBuilder: this.statusBuilder,
             betArr: multiBetArr,
-            winSide: this.bet.winSide,
+            winSide: this.winSide,
             betSpeed: speed
           })
         }
@@ -1814,24 +1748,24 @@
 
       changeBetPower(power) {
         if (power === 'max') {
-          if (this.bet.winSide === 1) {
-            this.bet.power = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)
-          } else if (this.bet.winSide === 3) {
-            this.bet.power = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)
+          if (this.winSide === 1) {
+            this.betPower = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)
+          } else if (this.winSide === 3) {
+            this.betPower = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)
           }
         } else if (power === 'min') {
-          this.bet.power = 10
+          this.betPower = 10
         } else if (power === 'f1') {
-          if (this.bet.winSide === 1) {
-            this.bet.power = this.odds.live.team_A.max / 100
-          } else if (this.bet.winSide === 3) {
-            this.bet.power = this.odds.live.team_B.max / 100
+          if (this.winSide === 1) {
+            this.betPower = this.odds.live.team_A.max / 100
+          } else if (this.winSide === 3) {
+            this.betPower = this.odds.live.team_B.max / 100
           }
         }
 
       },
       chooseWinner(winner) {
-        this.bet.winSide = winner
+        this.winSide = winner
       },
       async chooseSteamApiMatch(data) {
         this.steamApiDialog = !this.steamApiDialog
