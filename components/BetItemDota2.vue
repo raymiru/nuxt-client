@@ -368,7 +368,7 @@
                     <v-flex>
                       <v-card-text v-if="$store.state.playersBets[dataId]">
                         <div
-                          :class="{vilka: (1/(($store.state.playersBets[dataId].rightTotalBet + $store.state.playersBets[dataId].rightTotalPWin)/$store.state.playersBets[dataId].rightTotalBet)) + (1/(odds.live.team_A.odd / 100)) < 1 }"
+                          :class="{vilka: (1/((rightTotalBet + rightTotalPWin)/rightTotalBet)) + (1/(odds.live.team_A.odd / 100)) < 1 }"
                           class="odds">x{{ odds.live.team_A.odd / 100 }}
                         </div>
                         <v-layout>
@@ -376,7 +376,7 @@
                             {{ odds.live.team_A.max / 100 }}
                           </div>
                           <div style="margin-left: 5px" class="max" v-if="$store.state.playersBets[dataId]">
-                            {{ (odds.live.team_A.max / 100) * $store.state.playersBets[dataId].list.length }}
+                            {{ (odds.live.team_A.max / 100) * readyPlayersCount }}
                           </div>
                         </v-layout>
                       </v-card-text>
@@ -387,21 +387,21 @@
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{$store.state.playersBets[dataId].leftTotalBet}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{leftTotalBet}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{$store.state.playersBets[dataId].leftTotalPWin.toFixed(2)}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{leftTotalPWin.toFixed(2)}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{(($store.state.playersBets[dataId].leftTotalBet + $store.state.playersBets[dataId].leftTotalPWin)/$store.state.playersBets[dataId].leftTotalBet).toFixed(2)}}
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{((leftTotalBet + leftTotalPWin)/leftTotalBet).toFixed(2)}}
                       </v-card-text>
                     </v-flex>
                   </v-layout>
@@ -427,7 +427,7 @@
                     <v-flex>
                       <v-card-text v-if="$store.state.playersBets[dataId]">
                         <div
-                          :class="{vilka: (1/(($store.state.playersBets[dataId].leftTotalBet + $store.state.playersBets[dataId].leftTotalPWin)/$store.state.playersBets[dataId].leftTotalBet)) + (1/(odds.live.team_B.odd / 100)) < 1 }"
+                          :class="{vilka: (1/((leftTotalBet + leftTotalPWin)/leftTotalBet)) + (1/(odds.live.team_B.odd / 100)) < 1 }"
                           class="odds">x{{ odds.live.team_B.odd / 100 }}
                         </div>
                         <v-layout>
@@ -435,7 +435,7 @@
                             {{ odds.live.team_B.max / 100 }}
                           </div>
                           <div style="margin-left: 5px" class="max" v-if="$store.state.playersBets[dataId]">
-                            {{ (odds.live.team_B.max / 100) * $store.state.playersBets[dataId].list.length }}
+                            {{ (odds.live.team_B.max / 100) * readyPlayersCount }}
                           </div>
                         </v-layout>
                       </v-card-text>
@@ -445,22 +445,22 @@
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{$store.state.playersBets[dataId].rightTotalBet}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{rightTotalBet}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{$store.state.playersBets[dataId].rightTotalPWin.toFixed(2)}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{rightTotalPWin.toFixed(2)}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{(($store.state.playersBets[dataId].rightTotalBet +
-                        $store.state.playersBets[dataId].rightTotalPWin)/$store.state.playersBets[dataId].rightTotalBet).toFixed(2)}}
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{((rightTotalBet +
+                        rightTotalPWin)/rightTotalBet).toFixed(2)}}
                       </v-card-text>
                     </v-flex>
                   </v-layout>
@@ -481,16 +481,22 @@
                   <v-flex md10 style="margin-top: 5px" >
                     <v-slider  @click="focus" tabindex="-1" height="10px" v-if="winSide === 1"
                               v-model="betPower"
-                              :max="$store.state.playersBets[dataId].list.length * (odds.live.team_A.max / 100)"
+                              :max="readyPlayersCount * (odds.live.team_A.max / 100)"
                               :min="0"
-                              :step="5"
+                              :step="10"
+                               :color="sliderColor"
+                               :thumb-size="24"
+                               thumb-label="always"
                     >
                     </v-slider>
                     <v-slider @click="focus" tabindex="-1" height="10px" v-else-if="winSide === 3"
                               v-model="betPower"
-                              :max="$store.state.playersBets[dataId].list.length * (odds.live.team_B.max / 100)"
+                              :max="readyPlayersCount * (odds.live.team_B.max / 100)"
                               :min="0"
-                              :step="5"
+                              :step="10"
+                              :color="sliderColor"
+                              :thumb-size="24"
+                              thumb-label="always"
                     >
                     </v-slider>
                   </v-flex>
@@ -499,31 +505,31 @@
               <v-flex pa-3 style="border-top: grey 2px groove; border-bottom: grey 2px groove">
                 <v-layout v-if="!reverse" text-md-center style="font-size: 15px; ">
                   <v-flex md2
-                          :class="{TP_Plus: ($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet) > 0, TP_Minus: ($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet) < 0 }">
-                    {{($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet).toFixed(2)}}
+                          :class="{TP_Plus: (leftTotalPWin - rightTotalBet) > 0, TP_Minus: (leftTotalPWin - rightTotalBet) < 0 }">
+                    {{(leftTotalPWin - rightTotalBet).toFixed(2)}}
                   </v-flex>
-                  <v-flex md8 :class="{emptyAP: !$store.state.playersBets[dataId].list.length}"
-                          style="margin-right: 25px; color: yellow">AP: {{$store.state.playersBets[dataId].list.length}} / {{$store.state.players.length}}
+                  <v-flex md8 :class="{emptyAP: !readyPlayersCount}"
+                          style="margin-right: 25px; color: yellow">AP: {{readyPlayersCount}} / {{totalPlayersCount}}
                   </v-flex>
                   <!--<v-flex md3 style="color: yellow">BP: {{betPower}}</v-flex>-->
 
                   <v-flex md2
-                          :class="{TP_Plus: ($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet) > 0, TP_Minus: ($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet) < 0 }">
-                    {{($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet).toFixed(2)}}
+                          :class="{TP_Plus: (rightTotalPWin - leftTotalBet) > 0, TP_Minus: (rightTotalPWin - leftTotalBet) < 0 }">
+                    {{(rightTotalPWin - leftTotalBet).toFixed(2)}}
                   </v-flex>
                 </v-layout>
                 <v-layout v-if="reverse" text-md-center style="font-size: 15px; ">
                   <v-flex md2
-                          :class="{TP_Plus: ($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet) > 0, TP_Minus: ($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet) < 0 }">
-                    {{($store.state.playersBets[dataId].rightTotalPWin - $store.state.playersBets[dataId].leftTotalBet).toFixed(2)}}
+                          :class="{TP_Plus: (rightTotalPWin - leftTotalBet) > 0, TP_Minus: (rightTotalPWin - leftTotalBet) < 0 }">
+                    {{(rightTotalPWin - leftTotalBet).toFixed(2)}}
                   </v-flex>
 
-                  <v-flex md8 :class="{emptyAP: !$store.state.playersBets[dataId].list.length}"
-                          style="margin-right: 25px; color:yellow">AP: {{$store.state.playersBets[dataId].list.length}} / {{$store.state.players.length}}</v-flex>
+                  <v-flex md8 :class="{emptyAP: !readyPlayersCount}"
+                          style="margin-right: 25px; color:yellow">AP: {{readyPlayersCount}} / {{totalPlayersCount}}</v-flex>
 
                   <v-flex md2
-                          :class="{TP_Plus: ($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet) > 0, TP_Minus: ($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet) < 0 }">
-                    {{($store.state.playersBets[dataId].leftTotalPWin - $store.state.playersBets[dataId].rightTotalBet).toFixed(2)}}
+                          :class="{TP_Plus: (leftTotalPWin - rightTotalBet) > 0, TP_Minus: (leftTotalPWin - rightTotalBet) < 0 }">
+                    {{(leftTotalPWin - rightTotalBet).toFixed(2)}}
                   </v-flex>
 
                 </v-layout>
@@ -536,7 +542,7 @@
                 <v-btn @click="placeBet">
                   FORCE
                 </v-btn>
-                <v-btn tabindex="-1" :class="{disable_events: !$store.state.playersBets[dataId].list.length} " @click="func1">
+                <v-btn tabindex="-1" :class="{disable_events: !readyPlayersCount} " @click="func1">
                   NORMAL
                 </v-btn>
               </v-flex>
@@ -551,12 +557,12 @@
                     <v-flex>
                       <v-card-text v-if="$store.state.playersBets[dataId]">
                         <div
-                          :class="{vilka: (1/(($store.state.playersBets[dataId].leftTotalBet + $store.state.playersBets[dataId].leftTotalPWin)/$store.state.playersBets[dataId].leftTotalBet)) + (1/(odds.live.team_B.odd / 100)) < 1 }"
+                          :class="{vilka: (1/((leftTotalBet + leftTotalPWin)/leftTotalBet)) + (1/(odds.live.team_B.odd / 100)) < 1 }"
                           class="odds">x{{ odds.live.team_B.odd / 100 }}
                         </div>
                         <v-layout>
                           <div style="margin-left: 30px" class="max" v-if="$store.state.playersBets[dataId]">
-                            {{ (odds.live.team_B.max / 100) * $store.state.playersBets[dataId].list.length }}
+                            {{ (odds.live.team_B.max / 100) * readyPlayersCount }}
                           </div>
                           <div style="margin-left: 5px" class="max">
                             {{ odds.live.team_B.max / 100 }}
@@ -570,22 +576,22 @@
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{$store.state.playersBets[dataId].rightTotalBet}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{rightTotalBet}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{$store.state.playersBets[dataId].rightTotalPWin.toFixed(2)}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{rightTotalPWin.toFixed(2)}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{(($store.state.playersBets[dataId].rightTotalBet +
-                        $store.state.playersBets[dataId].rightTotalPWin)/$store.state.playersBets[dataId].rightTotalBet).toFixed(2)}}
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{((rightTotalBet +
+                        rightTotalPWin)/rightTotalBet).toFixed(2)}}
                       </v-card-text>
                     </v-flex>
                   </v-layout>
@@ -611,12 +617,12 @@
                     <v-flex>
                       <v-card-text v-if="$store.state.playersBets[dataId]">
                         <div
-                          :class="{vilka: (1/(($store.state.playersBets[dataId].rightTotalBet + $store.state.playersBets[dataId].rightTotalPWin)/$store.state.playersBets[dataId].rightTotalBet)) + (1/(odds.live.team_A.odd / 100)) < 1 }"
+                          :class="{vilka: (1/((rightTotalBet + rightTotalPWin)/rightTotalBet)) + (1/(odds.live.team_A.odd / 100)) < 1 }"
                           class="odds">x{{ odds.live.team_A.odd / 100 }}
                         </div>
                         <v-layout>
                           <div style="margin-left: 30px" class="max"  v-if="$store.state.playersBets[dataId]">
-                            {{ (odds.live.team_A.max / 100) * $store.state.playersBets[dataId].list.length }}
+                            {{ (odds.live.team_A.max / 100) * readyPlayersCount }}
                           </div>
                           <div style="margin-left: 5px" class="max">
                             {{ odds.live.team_A.max / 100 }}
@@ -630,21 +636,21 @@
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{$store.state.playersBets[dataId].leftTotalBet}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">TB: {{leftTotalBet}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{$store.state.playersBets[dataId].leftTotalPWin.toFixed(2)}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{leftTotalPWin.toFixed(2)}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{(($store.state.playersBets[dataId].leftTotalBet + $store.state.playersBets[dataId].leftTotalPWin)/$store.state.playersBets[dataId].leftTotalBet).toFixed(2)}}
+                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">x{{((leftTotalBet + leftTotalPWin)/leftTotalBet).toFixed(2)}}
                       </v-card-text>
                     </v-flex>
                   </v-layout>
@@ -1056,6 +1062,7 @@
 
     data() {
       return {
+        sliderColor: 'orange darken-3',
         allowed: true,
         alreadyListen: false,
         randomClass: String,
@@ -1141,12 +1148,21 @@
     },
 
     computed: {
+      totalPlayersCount() {
+        return this.$store.state.players.length
+      },
+
+      readyPlayersCount() {
+        return this.$store.state.playersBets[this.dataId].list.length
+      },
+
+
       leftTotalBet() {
         return this.$store.state.playersBets[this.dataId].leftTotalBet
       },
 
       rightTotalBet() {
-        return this.$store.state.playersBets[this.dataId].rightTotalBet()
+        return this.$store.state.playersBets[this.dataId].rightTotalBet
       },
 
       leftTotalPWin() {
@@ -1154,7 +1170,7 @@
       },
 
       rightTotalPWin() {
-        return this.$store.state.playersBets[this.dataId].rightTotalBet
+        return this.$store.state.playersBets[this.dataId].rightTotalPWin
       },
 
       dataIdWhenLive() {
@@ -1242,14 +1258,6 @@
         })
       },
 
-      testData: function() {
-        console.log('CHANGE testData')
-      },
-      // kills: function(val, oldVal) {
-      //   console.log('change')
-      //   console.log(val);
-      //   console.log(oldVal)
-      // },
 
       team_radiant_kills: function() {
         this.someThing(sound)
@@ -1389,29 +1397,29 @@
                 if (this.winSide === 1) {
                   if (e.key === 'a' || e.key === 'ф') this.betPower = this.betPower - (this.odds.live.team_A.max / 100)
                   if (e.key === 'd' || e.key === 'в') this.betPower = this.betPower + (this.odds.live.team_A.max / 100)
-                  if (e.key === 'q' || e.key === 'й') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.33
-                  if (e.key === 'w' || e.key === 'ц') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.5
-                  if (e.key === 'e' || e.key === 'у') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.66
-                  if (e.key === 'r' || e.key === 'к') this.betPower = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)
+                  if (e.key === 'q' || e.key === 'й') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.33
+                  if (e.key === 'w' || e.key === 'ц') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.5
+                  if (e.key === 'e' || e.key === 'у') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.66
+                  if (e.key === 'r' || e.key === 'к') this.betPower = this.readyPlayersCount * (this.odds.live.team_A.max / 100)
                   if (e.key === '1') this.betPower = this.odds.live.team_A.max / 100
-                  if (e.key === '2') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.3
-                  if (e.key === '3') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.45
-                  if (e.key === '4') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.6
-                  if (e.key === '5') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.75
-                  if (e.key === '6') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_A.max / 100)) * 0.9
+                  if (e.key === '2') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.3
+                  if (e.key === '3') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.45
+                  if (e.key === '4') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.6
+                  if (e.key === '5') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.75
+                  if (e.key === '6') this.betPower = (this.readyPlayersCount * (this.odds.live.team_A.max / 100)) * 0.9
                 } else if (this.winSide === 3) {
                   if (e.key === 'a' || e.key === 'ф') this.betPower = this.betPower - (this.odds.live.team_B.max / 100)
                   if (e.key === 'd' || e.key === 'в') this.betPower = this.betPower + (this.odds.live.team_B.max / 100)
-                  if (e.key === 'q' || e.key === 'й') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.33
-                  if (e.key === 'w' || e.key === 'ц') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.5
-                  if (e.key === 'e' || e.key === 'у') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.66
-                  if (e.key === 'r' || e.key === 'к') this.betPower = this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)
+                  if (e.key === 'q' || e.key === 'й') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.33
+                  if (e.key === 'w' || e.key === 'ц') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.5
+                  if (e.key === 'e' || e.key === 'у') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.66
+                  if (e.key === 'r' || e.key === 'к') this.betPower = this.readyPlayersCount * (this.odds.live.team_B.max / 100)
                   if (e.key === '1') this.betPower = this.odds.live.team_B.max / 100
-                  if (e.key === '2') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.3
-                  if (e.key === '3') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.45
-                  if (e.key === '4') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.6
-                  if (e.key === '5') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.75
-                  if (e.key === '6') this.betPower = (this.$store.state.playersBets[this.dataId].list.length * (this.odds.live.team_B.max / 100)) * 0.9
+                  if (e.key === '2') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.3
+                  if (e.key === '3') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.45
+                  if (e.key === '4') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.6
+                  if (e.key === '5') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.75
+                  if (e.key === '6') this.betPower = (this.readyPlayersCount * (this.odds.live.team_B.max / 100)) * 0.9
                 }
 
 

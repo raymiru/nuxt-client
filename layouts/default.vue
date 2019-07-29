@@ -289,7 +289,6 @@
           }
         },
         dataIdsArr: [],
-        logs: [1, 2, 3, 4, 'dasdas', 'dasdasd', 'dasdqweqweqsdas dasdasdsada sdasdas das123123123 12123', 312312],
         playerConnectUsername: null,
         playerDisconnectUsername: null,
         playerBetErrorUsername: null,
@@ -307,8 +306,6 @@
           { icon: 'bubble_chart', title: 'VMs', to: '/vms' },
           { icon: 'account_circle', title: 'Players', to: '/players' }
         ]
-
-
       }
     },
 
