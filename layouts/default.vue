@@ -186,6 +186,7 @@
                   <v-btn value="sync"  small round @click="forceReload('dota2')">D2</v-btn>
                   <v-btn value="sync"  small round @click="forceReload('csgo')">GO</v-btn>
                 </v-flex>
+                <v-flex><v-btn @click="resetState">RESET</v-btn></v-flex>
               </v-layout>
             </v-container>
           </v-card>
@@ -310,6 +311,11 @@
     },
 
     methods: {
+      resetState() {
+        this.$store.commit('resetState')
+      },
+
+
       forceReload(game) {
         this.$socket.emit('force_reload', {
           game
@@ -344,7 +350,6 @@
       },
 
       playSound(sound) {
-        console.log('ADUOO')
         let audio = new Audio(sound)
 
         audio.volume = 0.5
@@ -352,7 +357,6 @@
       },
 
       playersSyncRequest(data) {
-        console.log('players sync request')
         this.$socket.emit('players_sync_request', {
           game: this.game,
           type: data
@@ -361,7 +365,6 @@
 
 
       updateWatcher(game) {
-        console.log(game)
         this.$socket.emit('update_watcher', game)
       },
 
@@ -373,10 +376,6 @@
 
 
       sendMsg(username, msg) {
-        console.log({
-          username,
-          msg
-        })
         this.$socket.emit('chat_msg', {
           chat: this.chat,
           username,
@@ -517,13 +516,11 @@
       },
 
       import_chat_dota2(data) {
-        console.log(data)
         this.chatObj.chatLogs.dota2 = data.msgArray
         this.chatObj.onlineCount.dota2 = data.onlineCount
       },
 
       import_chat_csgo(data) {
-        console.log(data)
         this.chatObj.chatLogs.csgo = data.msgArray
         this.chatObj.onlineCount.csgo = data.onlineCount
       },
@@ -544,18 +541,15 @@
       },
 
       import_matches_dota2_next: function(data) {
-        console.log(data)
         this.$store.commit('matchesSyncDOTA2Next', data)
 
       },
 
       import_matches_csgo_now: function(data) {
-        console.log(data)
         this.$store.commit('matchesSyncCSGONow', data)
       },
 
       import_matches_csgo_next: function(data) {
-        console.log(data)
         this.$store.commit('matchesSyncCSGONext', data)
       },
 
@@ -564,7 +558,6 @@
       },
 
       players_sync: function(data) {
-        console.log(data)
         if (data) this.$store.commit('playersSync', data)
       },
 
@@ -586,11 +579,9 @@
       },
 
       disconnect: function() {
-        console.log(this.$socket)
         let i = 0
         const timeoutID = setInterval(() => {
           i++
-          console.log(i)
           if (i === 10) {
             this.$store.commit('matchesSync', [])
             this.$store.commit('errorMessageThrow', 'Соедениение с manager потеряно')
@@ -601,7 +592,6 @@
       },
 
       notification(data) {
-        console.log(data)
         if (data.event === 'player_connect') {
           this.playerConnectUsername = data.username
           this.playerDisconnectAlert = false

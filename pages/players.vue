@@ -85,10 +85,6 @@
 
     methods: {
       chatControl(type, username) {
-        console.log({
-          type,
-          username
-        })
         this.$socket.emit('chat_control', {
           type,
           username
@@ -97,7 +93,6 @@
 
 
       setGame(game, username) {
-        console.log('SET GAME')
         this.$socket.emit('set_game', {
           game,
           username
@@ -105,7 +100,6 @@
       },
 
       setStatus(status, username) {
-        console.log('SET STATUS')
         this.$socket.emit('set_status', {
           status,
           username

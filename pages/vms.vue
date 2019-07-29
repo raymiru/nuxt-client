@@ -59,28 +59,24 @@
 
     methods: {
       start(instanceId) {
-        console.log(instanceId)
         this.$axios.$post('https://www.rmbets.site/api/start', {
           id: instanceId
         })
           .then(response => {
-            console.log(response)
           })
           .catch((e) => {
-            console.log(e)
+            console.error(e)
           })
       },
 
       stop(instanceId) {
-        console.log(instanceId)
         this.$axios.$post('https://www.rmbets.site/api/stop', {
           id: instanceId
         })
           .then(response => {
-            console.log(response)
           })
           .catch((e) => {
-            console.log(e)
+            console.error(e)
           })
       },
 

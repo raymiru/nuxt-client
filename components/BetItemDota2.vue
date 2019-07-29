@@ -1220,8 +1220,7 @@
       },
 
       'teamA.LOCK': function(newVal) {
-        console.log('WATCH')
-        console.log(newVal)
+
         if (newVal) {
           if (this.winSide === 1) {
             this.winSide = null
@@ -1229,8 +1228,7 @@
         }
       },
       'teamB.LOCK': function(newVal) {
-        console.log('WATCH')
-        console.log(newVal)
+
         if (newVal) {
           if (this.winSide === 3) {
             this.winSide = null
@@ -1283,8 +1281,6 @@
 
     created() {
       this.randomClass = this.$chance.string({ length: 10, pool: 'abcdeghreq' })
-      console.log(this.randomClass)
-
       this.$store.subscribe((mutation, state) => {
         if (this.matchIndex !== null) {
           state.steamApiData.forEach((data, index) => {
@@ -1326,10 +1322,7 @@
       })
 
       this.$socket.on('live_status_update', () => {
-        // console.log('LIVE STATUS UPDATE')
-        // setTimeout(() => {
-        //   this.eventStart()
-        // }, 500)
+
       })
 
       this.$socket.on(`${this.dataId}`, data => {
@@ -1364,11 +1357,8 @@
     methods: {
 
       eventStart() {
-        console.info('try to add event to: ' + this.dataId )
         if (!this.alreadyListen) {
-          console.log('element not listen')
           if (document.querySelector(`[data-id="${this.dataId.toString()}"]`)) {
-            console.log('element is live')
             this.alreadyListen = true
             document.querySelector(`[data-id="${this.dataId.toString()}"]`).addEventListener('keydown', e => {
               if (document.activeElement.getAttribute('data-id') === this.dataId.toString()) {
@@ -1380,7 +1370,6 @@
                 this.allowed = false
 
 
-                console.log('Data ID: ' + this.dataId)
                 if (!this.reverse) {
                   if (e.key === 'ArrowLeft' && !this.teamA.LOCK) {
                     this.winSide = 1
@@ -1445,10 +1434,10 @@
               }
             })
           } else {
-            console.log('element no live')
+
           }
         } else {
-          console.log('element already listen')
+
         }
       },
 
@@ -1492,11 +1481,6 @@
 
 
       singleBet(username, winSide, betSize) {
-        console.log({
-          username,
-          winSide,
-          betSize
-        })
         this.$socket.emit('single_bet', {
           dataId: this.dataId,
           statusBuilder: this.statusBuilder,
@@ -1509,13 +1493,8 @@
         this.bet.right[username] = ''
       },
 
-      placeBetFast() {
-        console.log('PLACE BET FAST')
-        this.$socket.emit()
-      },
 
       placeBet: function() {
-        console.log(this.dataId)
         this.$socket.emit('place_bet', {
           dataId: this.dataId,
           winSide: this.winSide
@@ -1527,12 +1506,9 @@
           dataId,
           index
         })
-        console.log(dataId)
-        console.log(index)
       },
 
       heroesIcons: function() {
-        console.log('HEROES')
         this.$axios.$post('https://www.rmbets.site/api/heroes', {
           match_id: this.steamApiMatch
         }).then(result => {
@@ -1681,7 +1657,6 @@
 
 
         if (this.$store.state.playersBets[this.dataId].list.length !== 0 && maxBet !== 0 && this.betPower !== 0 && this.winSide !== 0) {
-          console.log('multiBet')
           let multiBetArr = multiBet(this.$store.state.playersBets[this.dataId].list, maxBet, this.betPower, this.bet.type)
           this.$socket.emit('multi_bet_dota2', {
             dataId: this.dataId,
@@ -1703,7 +1678,6 @@
       },
 
       dynamicClass(data) {
-        console.log('DYNAMIC')
         return data
       },
 
@@ -1808,7 +1782,6 @@
 
     sockets: {
       updatematch_dota: function(data) {
-        console.log(data)
       }
     }
   }

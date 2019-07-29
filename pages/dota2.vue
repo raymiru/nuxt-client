@@ -62,7 +62,6 @@
     mounted() {
       let elem = document.querySelector('body');
       const findStartItem = () => {
-        console.log('start item')
         if (document.getElementById('0')) {
           document.getElementById('0').focus()
         }
@@ -70,7 +69,6 @@
 
       const listener = (e) => {
         if (e.key === 'ArrowDown') {
-          console.log('Key: ' + e.key)
           if (document.activeElement.id !== '') {
             this.matchNowIndex = parseInt(document.activeElement.id)
             if (document.getElementById(`${this.matchNowIndex + 1}`) && document.getElementById(`${this.matchNowIndex + 1}`).id) {
@@ -81,7 +79,6 @@
             findStartItem()
           }
         } else if (e.key === 'ArrowUp') {
-          console.info('Key: ' + e.key)
           if (document.activeElement.id !== '') {
             this.matchNowIndex = parseInt(document.activeElement.id)
             if (document.getElementById(`${this.matchNowIndex -1}`) && document.getElementById(`${this.matchNowIndex - 1}`).id) {

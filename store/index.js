@@ -3,30 +3,46 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+const initialState = () => {
+  return {
+    errorMessage: '',
+
+    matches: {
+      mode: 'now',
+      status: 'all',
+      DOTA2: {
+        now: [],
+        next: []
+      },
+      CSGO: {
+        now: [],
+        next: []
+      }
+    },
+    steamApiData: [],
+    players: [],
+    playersBets: {},
+    listReadyToBetPlayers: {}
+  }
+}
+
+
 // noinspection JSValidateTypes
 const store = () =>
   new Vuex.Store({
-    state: {
-      errorMessage: '',
-
-      matches: {
-        mode: 'now',
-        status: 'all',
-        DOTA2: {
-          now: [],
-          next: []
-        },
-        CSGO: {
-          now: [],
-          next: []
-        }
-      },
-      steamApiData: [],
-      players: [],
-      playersBets: {},
-      listReadyToBetPlayers: {}
-    },
+    state: initialState,
     mutations: {
+      resetState(state) {
+        state.matches.DOTA2.now = []
+        state.matches.CSGO.now = []
+        state.matches.DOTA2.next = []
+        state.matches.CSGO.next = []
+        state.players = []
+        state.playersBets = {}
+        state.steamApiData = []
+      },
+
+
       errorMessageThrow(state, payload) {
         state.errorMessage = payload
       },
@@ -40,12 +56,12 @@ const store = () =>
       },
 
       matchesSyncDOTA2Now(state, payload) {
-        state.matches.DOTA2.now = null
+        state.matches.DOTA2.now = initialState().matches.DOTA2.now
         state.matches.DOTA2.now = payload
       },
 
       matchesSyncDOTA2Next(state, payload) {
-        state.matches.DOTA2.next = null
+        state.matches.DOTA2.next = initialState().matches.DOTA2.next
         state.matches.DOTA2.next = payload
       },
 
