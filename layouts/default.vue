@@ -186,7 +186,6 @@
                   <v-btn value="sync"  small round @click="forceReload('dota2')">D2</v-btn>
                   <v-btn value="sync"  small round @click="forceReload('csgo')">GO</v-btn>
                 </v-flex>
-                <v-flex><v-btn @click="resetState">RESET</v-btn></v-flex>
               </v-layout>
             </v-container>
           </v-card>
