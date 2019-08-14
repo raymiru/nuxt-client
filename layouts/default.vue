@@ -399,12 +399,12 @@
     },
 
     mounted() {
-      window.addEventListener('keydown', e => {
-
-        if (e.key === 'Shift') {
-          this.allPlayersToReady()
-        }
-      })
+      // window.addEventListener('keydown', e => {
+      //
+      //   if (e.key === 'Shift') {
+      //     this.allPlayersToReady()
+      //   }
+      // })
 
       if (!this.game) this.game = this.$router.history.current.name
 

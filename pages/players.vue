@@ -14,7 +14,7 @@
     </v-layout>
     <v-layout>
       <v-flex>
-        <v-data-table :headers="headers" :items="$store.state.players" :rows-per-page-items="[20, 30, 50, 100]">
+        <v-data-table :headers="headers" :items="$store.state.players" :rows-per-page-items="[50, 100, 200, 500]">
           <template class="playerItem" v-slot:items="props">
             <td class="td">{{props.item.username}}</td>
             <td class="td">{{props.item.space}}</td>
