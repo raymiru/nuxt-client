@@ -394,7 +394,7 @@
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{leftTotalPWin.toFixed(2)}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId] && leftTotalPWin" class="main_stat_item">PW: {{leftTotalPWin.toFixed(1)}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>
@@ -452,7 +452,7 @@
 
                   <v-layout>
                     <v-flex>
-                      <v-card-text v-if="$store.state.playersBets[dataId]" class="main_stat_item">PW: {{rightTotalPWin.toFixed(2)}}</v-card-text>
+                      <v-card-text v-if="$store.state.playersBets[dataId] && rightTotalPWin" class="main_stat_item">PW: {{rightTotalPWin.toFixed(1)}}</v-card-text>
                     </v-flex>
                   </v-layout>
                   <v-divider></v-divider>

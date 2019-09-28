@@ -202,7 +202,8 @@
         <v-btn value="now" @click="setMatchMode('now')">NOW</v-btn>
         <v-btn value="next" @click="setMatchMode('next')">NEXT</v-btn>
       </v-btn-toggle>
-      <v-btn light small round @click="clearMatchesDOTA2Now">CLEAR</v-btn>
+      <v-btn light small round @click="clearMatchesDOTA2Now">CLR D2</v-btn>
+      <v-btn light small round @click="clearMatchesCSGONow">CLR GO</v-btn>
       <v-toolbar-title style="margin-left: 1%; font-size: 14px">STATUS</v-toolbar-title>
       <v-btn-toggle style="margin-left: 1%" :value="$store.state.matches.status">
         <v-btn value="live" @click="setMatchStatus('live')">LIVE</v-btn>
@@ -346,6 +347,11 @@
       clearMatchesDOTA2Now: function() {
         this.$store.commit('matchesSyncDOTA2Now', [])
         this.updateWatcher('dota2')
+      },
+
+      clearMatchesCSGONow: function() {
+        this.$store.commit('matchesSyncCSGONow', [])
+        this.updateWatcher('csgo')
       },
 
       playSound(sound) {
