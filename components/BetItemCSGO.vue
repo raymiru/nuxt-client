@@ -1343,7 +1343,7 @@
             if (json.live_restriction_RUB[0] <= 20000) {
               this.odds.live.team_A.max = json.live_restriction_RUB[0]
             } else return
-            if (json.live_restriction_RUB[1] < 20000) {
+            if (json.live_restriction_RUB[1] <= 20000) {
               this.odds.live.team_B.max = json.live_restriction_RUB[1]
             } else return
 
