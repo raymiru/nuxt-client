@@ -1339,10 +1339,10 @@
           if (json.locked) {
             this.odds.locked = json.locked
           }
-          if (json.live_restriction_RUB) {
-            this.odds.live.team_A.max = json.live_restriction_RUB[0]
-            this.odds.live.team_B.max = json.live_restriction_RUB[1]
-          }
+          // if (json.live_restriction_RUB) {
+          //   this.odds.live.team_A.max = json.live_restriction_RUB[0]
+          //   this.odds.live.team_B.max = json.live_restriction_RUB[1]
+          // }
 
           if (json.m_koef_a) {
             this.odds.soon.team_A.odd = json.m_koef_a
@@ -1415,9 +1415,9 @@
                 if (e.key === 'v' || e.key === 'м') {
                   this.func1('normal')
                 }
-                // if (e.key === ' ') {
-                //   this.func1('force')
-                // }
+                if (e.key === ' ') {
+                  this.func1('force')
+                }
                 if (e.key === 'x' || e.key === 'ч') {
                   this.hideAndMap()
                 }
