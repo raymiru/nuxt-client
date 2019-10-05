@@ -1339,10 +1339,15 @@
           if (json.locked) {
             this.odds.locked = json.locked
           }
-          // if (json.live_restriction_RUB) {
-          //   this.odds.live.team_A.max = json.live_restriction_RUB[0]
-          //   this.odds.live.team_B.max = json.live_restriction_RUB[1]
-          // }
+          if (json.live_restriction_RUB) {
+            if (json.live_restriction_RUB[0] <= 20000) {
+              this.odds.live.team_A.max = json.live_restriction_RUB[0]
+            } else return
+            if (json.live_restriction_RUB[1] < 20000) {
+              this.odds.live.team_B.max = json.live_restriction_RUB[1]
+            } else return
+
+          }
 
           if (json.m_koef_a) {
             this.odds.soon.team_A.odd = json.m_koef_a
