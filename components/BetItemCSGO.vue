@@ -1418,7 +1418,7 @@
 
 
                 if (e.key === 'v' || e.key === 'м') {
-                  this.func1('normal')
+                  this.func1('force')
                 }
                 if (e.key === ' ') {
                   this.func1('force')
