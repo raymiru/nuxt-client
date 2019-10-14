@@ -520,6 +520,18 @@
         this.$store.commit('errorMessageThrow', 'Матчи не найдены. Проверьте Manager и Watcher')
       },
 
+      parimatch_match_list(data) {
+        this.$store.commit('parimatchMatchList', data);
+      },
+
+      ggbet_match_list(data) {
+        this.$store.commit('ggbetMatchList', data);
+      },
+
+      bet365_match_list(data) {
+        this.$store.commit('bet365MatchList', data)
+      },
+
       import_chat_dota2(data) {
         this.chatObj.chatLogs.dota2 = data.msgArray
         this.chatObj.onlineCount.dota2 = data.onlineCount

@@ -40,6 +40,9 @@ export default {
    */
   plugins: [
     {
+      src: '~/plugins/twitchPlayer'
+    },
+    {
       src: '~/plugins/socket.io',
       ssr: false
     },

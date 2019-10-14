@@ -20,6 +20,9 @@ const initialState = () => {
       }
     },
     steamApiData: [],
+    parimatchData: [],
+    ggbetData: [],
+    bet365Data: [],
     players: [],
     playersBets: {},
     listReadyToBetPlayers: {}
@@ -53,6 +56,18 @@ const store = () =>
 
       setMatchStatus(state, payload) {
         state.matches.status = payload
+      },
+
+      parimatchMatchList(state, payload) {
+        state.parimatchData = payload
+      },
+
+      ggbetMatchList(state, payload) {
+        state.ggbetData = payload
+      },
+
+      bet365MatchList(state, payload) {
+        state.bet365Data = payload
       },
 
       matchesSyncDOTA2Now(state, payload) {

@@ -1321,9 +1321,6 @@
         }
       })
 
-      this.$socket.on('live_status_update', () => {
-
-      })
 
       this.$socket.on(`${this.dataId}`, data => {
         if (data.radiant_win !== undefined) {
